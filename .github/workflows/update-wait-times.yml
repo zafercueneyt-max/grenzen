@@ -1,0 +1,40 @@
+name: Wartezeiten aktualisieren
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wait-times
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code holen
+        uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Wartezeiten holen
+        run: node scripts/fetch-wait.mjs
+
+      - name: Aenderungen committen
+        run: |
+          git config user.name "wait-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- data/wait-times.json; then
+            git add data/wait-times.json
+            git commit -m "Wartezeiten aktualisiert"
+            git push
+          else
+            echo "Keine Aenderung."
+          fi
