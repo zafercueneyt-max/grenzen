@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Grenzen Live · Fürth ⇄ Silivri</title>
+<meta name="theme-color" content="#0C1420" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Grenzen" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="icon" href="icon.svg" />
+<style>
+  :root{
+    --bg:#0C1420; --ink:#EAF1FB; --muted:#8DA0BE;
+    --go:#2CC685; --caution:#F4A53A; --busy:#EE5A52; --steel:#5C7299;
+    --glass:rgba(21,32,51,.55);
+    --glass-strong:rgba(20,30,49,.74);
+    --glass-edge:rgba(255,255,255,.14);
+    --glass-hi:rgba(255,255,255,.22);
+    --line:#2A3A57;
+    --r:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1100px 560px at 18% -160px,#1c3566 0%,transparent 58%),
+      radial-gradient(1000px 520px at 95% 10%,#163a4a 0%,transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.45;
+    padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 28px);
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:22px 16px 0}
+
+  .glass{
+    backdrop-filter:blur(18px) saturate(160%);
+    -webkit-backdrop-filter:blur(18px) saturate(160%);
+    background:var(--glass);
+    border:1px solid var(--glass-edge);
+    box-shadow:inset 0 1px 0 var(--glass-hi), 0 8px 24px rgba(0,0,0,.35);
+    position:relative;
+  }
+  .glass::before{
+    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(135deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 42%);
+  }
+  .glass.solidish{background:var(--glass-strong)}
+
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--go);margin:0 0 8px;display:flex;align-items:center;gap:9px}
+  .eyebrow::before{content:"";width:22px;height:2px;background:var(--go);display:inline-block}
+  .titlerow{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+  h1{font-size:clamp(28px,7.5vw,40px);line-height:1.0;margin:0;font-weight:850;
+    letter-spacing:-.01em;text-transform:uppercase}
+  .install-btn{flex:0 0 auto;border-radius:999px;padding:9px 13px;font-family:inherit;
+    font-weight:850;font-size:12.5px;color:var(--ink);cursor:pointer;white-space:nowrap;
+    border:1px solid var(--glass-edge);background:var(--glass);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .install-hint{display:none;margin-top:10px;border-radius:14px;padding:12px 14px;font-size:12.5px;
+    color:#cdd9ee;line-height:1.6}
+  .install-hint.open{display:block;animation:glass-in .3s cubic-bezier(.22,1,.36,1)}
+  .install-hint b{color:var(--ink)}
+
+  .ki-launch{
+    width:100%;margin-top:14px;border:1px solid rgba(44,198,133,.5);border-radius:999px;
+    padding:14px 16px;font-family:inherit;font-weight:850;font-size:15px;letter-spacing:.02em;
+    color:#06231b;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
+    background:linear-gradient(180deg,#52e0a4 0%,#2CC685 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 8px 22px rgba(44,198,133,.28);
+    transition:transform .25s cubic-bezier(.22,1,.36,1), filter .2s ease}
+  .ki-launch:active{transform:translateY(0) scale(.99)}
+  .ki-dot{width:9px;height:9px;border-radius:50%;background:#06231b;animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(6,35,27,.45)}70%{box-shadow:0 0 0 7px rgba(6,35,27,0)}100%{box-shadow:0 0 0 0 rgba(6,35,27,0)}}
+
+  .ki-panel{margin-top:12px;border-radius:var(--r);padding:15px;display:none}
+  .ki-panel.open{display:block;animation:glass-in .3s cubic-bezier(.22,1,.36,1)}
+  @keyframes glass-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+  .ki-panel h3{margin:0 0 4px;font-size:15px;font-weight:850}
+  .ki-panel .sub{margin:0 0 11px;color:var(--muted);font-size:12.5px}
+  .ki-panel label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:850;margin:0 0 6px}
+  .ki-panel textarea{width:100%;min-height:150px;resize:vertical;border-radius:12px;padding:11px 12px;
+    font-family:inherit;font-size:13px;line-height:1.5;color:var(--ink);
+    background:#0c1626;border:1px solid var(--line);outline:none}
+  .ki-panel textarea:focus{border-color:var(--go)}
+  .ki-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
+  .ki-actions button{font-family:inherit;font-weight:850;font-size:13.5px;border-radius:11px;
+    padding:12px 8px;cursor:pointer;min-height:46px;color:var(--ink);
+    border:1px solid var(--glass-edge);background:var(--glass);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .ki-actions .primary{grid-column:1 / -1;background:linear-gradient(180deg,#52e0a4,#2CC685);
+    color:#06231b;border-color:rgba(44,198,133,.5)}
+  .ki-note{margin:10px 2px 0;color:var(--muted);font-size:11.5px;line-height:1.5}
+  .copied{color:var(--go);font-weight:850}
+
+  .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+  .tool{border-radius:12px;padding:11px 10px;font-family:inherit;font-weight:850;font-size:13px;
+    cursor:pointer;color:var(--ink);border:1px solid var(--glass-edge);background:var(--glass);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);min-height:46px;
+    display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none}
+  .tool.active{background:var(--go);color:#05221a;border-color:rgba(44,198,133,.5)}
+  .clock{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:800}
+
+  .seg{display:flex;border-radius:999px;padding:4px;gap:4px;margin-top:10px}
+  .seg button{flex:1;border:0;background:transparent;color:var(--muted);font-weight:850;
+    font-size:13px;padding:11px 8px;border-radius:999px;cursor:pointer;font-family:inherit;
+    transition:background .2s,color .2s}
+  .seg button.active{background:var(--go);color:#05221a}
+
+  .locbar{display:none;margin-top:12px;border-radius:14px;padding:11px 14px;font-size:13.5px;
+    font-weight:800;align-items:center;gap:9px}
+  .locbar.show{display:flex;animation:glass-in .3s cubic-bezier(.22,1,.36,1)}
+  .locbar .pin{color:var(--go)}
+  .locbar .km{margin-left:auto;color:var(--caution);font-weight:850}
+
+  .hint{margin:16px 2px 6px;color:var(--muted);font-size:12.5px;text-transform:uppercase;
+    letter-spacing:.14em;font-weight:800}
+
+  .rail{position:relative;margin-top:6px;padding-left:30px}
+  .rail::before{content:"";position:absolute;left:9px;top:10px;bottom:18px;width:2px;
+    background:repeating-linear-gradient(var(--steel) 0 8px,transparent 8px 16px);opacity:.55}
+  .node{position:absolute;left:-30px;top:18px;width:20px;height:20px;border-radius:50%;
+    background:rgba(27,40,64,.7);border:2px solid var(--steel)}
+  .endpoint .node{top:6px;background:var(--go);border-color:var(--go);box-shadow:0 0 14px rgba(44,198,133,.5)}
+  .endpoint{position:relative;margin:0 0 12px;min-height:30px}
+  .endpoint .lbl{font-weight:850;font-size:16px;padding-top:2px}
+  .endpoint .lbl small{display:block;color:var(--muted);font-weight:800;font-size:11px;
+    text-transform:uppercase;letter-spacing:.12em;margin-top:2px}
+
+  .leg{position:relative;margin:0 0 12px;color:var(--muted);font-size:12.5px;font-weight:700;padding-left:2px}
+  .leg .ico{color:var(--steel);font-weight:900;margin-right:6px}
+  .leg .meta{color:var(--ink);font-weight:800}
+  .leg .sleep{display:block;margin-top:3px;color:var(--caution);font-weight:800;font-size:12px}
+
+  .stop{position:relative;margin:0 0 14px}
+  .card{border-radius:var(--r);padding:15px 15px 13px}
+  .card.muted{opacity:.92}
+  .crumbs{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:7px}
+  .cc{font-size:11px;font-weight:850;letter-spacing:.08em;color:var(--ink);
+    background:rgba(10,18,30,.55);border:1px solid var(--glass-edge);padding:3px 8px;border-radius:6px}
+  .arrow{color:var(--steel);font-weight:800}
+  .badge{margin-left:auto;font-size:10.5px;font-weight:850;letter-spacing:.1em;
+    text-transform:uppercase;padding:3px 9px;border-radius:999px}
+  .badge.go{color:var(--go);background:rgba(44,198,133,.12)}
+  .badge.key{color:var(--caution);background:rgba(244,165,58,.16)}
+  .badge.hot{color:var(--busy);background:rgba(238,90,82,.16)}
+  .name{font-size:19px;font-weight:850;margin:2px 0 2px;letter-spacing:-.01em}
+  .desc{margin:0 0 10px;color:#b9c8e2;font-size:13.5px}
+  .desc b{color:var(--ink);font-weight:700}
+
+  .statusrow{display:flex;align-items:center;gap:9px;margin:0 0 11px;flex-wrap:wrap}
+  .stbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--glass-edge);
+    background:rgba(10,18,30,.45);border-radius:999px;padding:6px 11px;cursor:pointer;
+    font-family:inherit;font-weight:850;font-size:12.5px;color:var(--ink)}
+  .stbtn .sd{width:11px;height:11px;border-radius:50%;background:var(--steel)}
+  .stbtn.s1 .sd{background:var(--go)} .stbtn.s2 .sd{background:var(--caution)} .stbtn.s3 .sd{background:var(--busy)}
+  .stbtn.s1{border-color:rgba(44,198,133,.4)} .stbtn.s2{border-color:rgba(244,165,58,.4)} .stbtn.s3{border-color:rgba(238,90,82,.4)}
+  .sttime{color:var(--muted);font-size:11.5px;font-weight:800}
+
+  .btns{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  a.btn,button.btn{text-decoration:none;text-align:center;border-radius:11px;padding:11px 8px;
+    font-size:13.5px;font-weight:800;border:1px solid var(--glass-edge);color:var(--ink);
+    background:var(--glass);display:flex;align-items:center;justify-content:center;min-height:44px;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-family:inherit;cursor:pointer}
+  a.btn.map{background:rgba(16,36,58,.6);border-color:rgba(63,121,180,.4);color:#bfe0ff}
+  a.btn.fuel{background:rgba(58,44,16,.5);border-color:rgba(244,165,58,.4);color:#ffd9a0}
+  a.btn.cam{background:linear-gradient(180deg,#52e0a4,#2CC685);border-color:rgba(44,198,133,.5);
+    color:#05221a;font-size:14.5px;font-weight:850;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 6px 16px rgba(44,198,133,.22)}
+  a.btn.span2,button.btn.span2{grid-column:1 / -1}
+
+  .alts{margin-top:12px;border-top:1px dashed var(--line);padding-top:11px}
+  .alts h4{margin:0 0 9px;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:850}
+  .alt{display:flex;align-items:center;gap:8px;margin:0 0 10px;flex-wrap:wrap}
+  .alt:last-child{margin-bottom:0}
+  .alt .an{font-weight:800;font-size:13.5px}
+  .alt .km{font-size:11px;font-weight:850;color:var(--caution);background:rgba(244,165,58,.13);padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .alt .note{color:var(--muted);font-size:12px;flex:1 1 110px}
+  .alt .alinks{display:flex;gap:7px;margin-left:auto}
+  .alt a.amap,.alt a.acam{text-decoration:none;font-size:12px;font-weight:800;padding:7px 11px;
+    border-radius:9px;min-height:34px;display:flex;align-items:center;border:1px solid var(--glass-edge)}
+  .alt a.amap{color:#bfe0ff;background:rgba(16,36,58,.55);border-color:rgba(63,121,180,.4)}
+  .alt a.acam{color:#06231b;background:linear-gradient(180deg,#52e0a4,#2CC685);border-color:rgba(44,198,133,.5)}
+
+  /* Info-Akkordeon */
+  .sections{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+  details.acc{border-radius:var(--r);overflow:hidden}
+  details.acc summary{list-style:none;cursor:pointer;padding:14px 15px;font-weight:850;font-size:15px;
+    display:flex;align-items:center;gap:10px}
+  details.acc summary::-webkit-details-marker{display:none}
+  details.acc summary .chev{margin-left:auto;color:var(--muted);transition:transform .2s}
+  details.acc[open] summary .chev{transform:rotate(90deg)}
+  .acc .body{padding:0 15px 15px}
+  .row2{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-top:1px solid var(--line)}
+  .row2 .flag{font-size:18px;line-height:1.2;flex:0 0 auto}
+  .row2 .txt{flex:1 1 auto;font-size:13px;color:#c5d2e8}
+  .row2 .txt b{color:var(--ink)}
+  .row2 a.go{flex:0 0 auto;text-decoration:none;font-size:12px;font-weight:850;color:#06231b;
+    background:linear-gradient(180deg,#52e0a4,#2CC685);padding:8px 12px;border-radius:9px;align-self:center}
+  .row2 .none{flex:0 0 auto;font-size:11px;font-weight:850;color:var(--muted);align-self:center}
+  .chk{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-top:1px solid var(--line);cursor:pointer}
+  .chk input{margin-top:2px;width:18px;height:18px;accent-color:var(--go);flex:0 0 auto}
+  .chk span{font-size:13px;color:#c5d2e8}
+  .chk span b{color:var(--ink)}
+  .summary-line{font-size:13px;color:#c5d2e8;padding:10px 0;border-top:1px solid var(--line)}
+  .summary-line.total{font-weight:850;color:var(--ink);border-top:0;padding-top:0;margin-bottom:4px}
+
+  .foot{margin:18px 4px 0;color:var(--muted);font-size:12px;line-height:1.6;border-top:1px solid var(--line);padding-top:14px}
+  .foot b{color:var(--ink)}
+
+  /* Fahrmodus */
+  body.drive .stop:not(.focus) .desc,
+  body.drive .stop:not(.focus) .statusrow,
+  body.drive .stop:not(.focus) .alts,
+  body.drive .stop:not(.focus) .btns .map,
+  body.drive .stop:not(.focus) .btns .fuel,
+  body.drive .stop:not(.focus) .btns .lnk{display:none}
+  body.drive .stop:not(.focus) .card{cursor:pointer}
+  body.drive .stop.focus .card{outline:2px solid rgba(44,198,133,.55);outline-offset:1px}
+  body.drive a.btn,body.drive button.btn{min-height:56px;font-size:15px}
+  body.drive .name{font-size:22px}
+  body.drive .ki-panel,body.drive .sections{opacity:.55}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">İzin Yolu · Live</p>
+  <div class="titlerow">
+    <h1>Grenzen-<br>Check</h1>
+    <button class="install-btn" id="installBtn" type="button">📲 Installieren</button>
+  </div>
+  <div class="install-hint glass" id="installHint">
+    <b>Als App aufs Handy:</b><br>
+    <b>iPhone (Safari):</b> Teilen-Symbol → „Zum Home-Bildschirm".<br>
+    <b>Android (Chrome):</b> Menü ⋮ → „App installieren" / „Zum Startbildschirm".<br>
+    Danach läuft die Seite mit eigenem Icon im Vollbild. Die <b>Datei selbst öffnet auch offline</b> – nur die Kameras/Links brauchen Internet.
+  </div>
+
+  <button class="ki-launch" id="kiBtn" type="button">
+    <span class="ki-dot"></span> KI: Live-Check meiner Strecke
+  </button>
+  <div class="ki-panel glass solidish" id="kiPanel">
+    <h3>KI prüft deine Grenzabschnitte live</h3>
+    <p class="sub">Fertiger Prompt für deine aktuelle Richtung. Öffnet eine KI mit Live-Websuche.</p>
+    <label for="kiPrompt">Prompt (anpassbar)</label>
+    <textarea id="kiPrompt" spellcheck="false"></textarea>
+    <div class="ki-actions">
+      <button class="primary" id="kiPerplexity" type="button">🔎 Perplexity · startet sofort</button>
+      <button id="kiGpt" type="button">ChatGPT</button>
+      <button id="kiGemini" type="button">Gemini</button>
+      <button id="kiClaude" type="button">Claude</button>
+      <button id="kiCopy" type="button">Prompt kopieren</button>
+    </div>
+    <p class="ki-note" id="kiNote">Perplexity &amp; ChatGPT bekommen den Prompt über den Link. Gemini &amp; Claude kopieren ihn – im Chat einfügen (⌘/Strg+V). Internet nötig.</p>
+  </div>
+
+  <div class="toolbar">
+    <button class="tool" id="locBtn" type="button">📍 Nächste Grenze</button>
+    <button class="tool" id="driveBtn" type="button">🚗 Fahrmodus</button>
+    <span class="tool clock" id="clock">--:--</span>
+    <a class="tool" href="https://www.amss.org.rs/stanje-na-putu/strana/mapa" target="_blank" rel="noopener">⏱️ Wartezeit RS</a>
+  </div>
+
+  <div class="seg glass" id="seg">
+    <button data-dir="out" class="active">Fürth → Silivri</button>
+    <button data-dir="ret">Silivri → Fürth</button>
+  </div>
+
+  <div class="locbar glass" id="locbar"><span class="pin">📍</span><span id="locText"></span><span class="km" id="locKm"></span></div>
+
+  <p class="hint">Deine Strecke · tippe eine Grenze für Live-Status</p>
+  <div class="rail" id="rail"></div>
+
+  <div class="sections">
+    <details class="acc glass solidish">
+      <summary>🎫 Vignetten &amp; Maut <span class="chev">›</span></summary>
+      <div class="body" id="tollBody"></div>
+    </details>
+    <details class="acc glass solidish">
+      <summary>📄 Dokumente-Check <span class="chev">›</span></summary>
+      <div class="body" id="docBody"></div>
+    </details>
+    <details class="acc glass solidish">
+      <summary>🛏️ Etappen &amp; Schlaf <span class="chev">›</span></summary>
+      <div class="body" id="stageBody"></div>
+    </details>
+  </div>
+
+  <p class="foot">
+    <b>Status-Punkt:</b> tippe ihn an, um selbst zu markieren, was du siehst/hörst (frei/zäh/Stau) – mit Uhrzeit. <b>Live-Zahlen</b> automatisch in der App bräuchten einen kleinen gehosteten Dienst (Browser sperren das aus einer lokalen Datei); dafür gibt's den AMSS-Link und die KI.
+    Quellen: AllTrafficCams (HAK/AMSS/MUP), AMSS (RS), Siladayız; Maut-Links offiziell (ASFINAG, DARS, BGToll, PTT/HGS). km/Zeiten &amp; Umwege sind grobe Richtwerte – vor Abfahrt prüfen.
+  </p>
+</div>
+
+<script>
+  var MAP=function(q){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);};
+
+  var borders=[
+    {from:'AT',to:'SI',klass:'muted',badge:'Schengen',badgeClass:'go',
+     name:'Karawankentunnel',coords:'46.4393,14.0755',lat:46.4393,lng:14.0755,
+     cam:'https://alltrafficcams.com/de/live/grenzubergang/slowenien/osterreich/karawanken-tunnel-kamera/',
+     desc:'Meist <b>kein Stau</b> – aber <b>Tunnelmaut</b> (extra, nicht in Vignette). Vignetten AT/SI nötig.',
+     fuel:'Villach',fuelTip:'In AT/SI tanken',
+     links:[],
+     alts:[{an:'Loiblpass (Ljubelj)',km:'+~15 km',note:'mautfreier Pass, langsamer',coords:'46.4470,14.2640'}]},
+
+    {from:'SI',to:'HR',klass:'muted',badge:'Schengen',badgeClass:'go',
+     name:'Obrežje / Bregana',coords:'45.8470,15.7000',lat:45.8470,lng:15.7000,
+     cam:'https://alltrafficcams.com/de/live/grenzubergang/kroatien/slowenien/bregana-obrezje/',
+     desc:'Schengen-Binnengrenze – meist freie Fahrt, gelegentlich <b>Stichproben</b>.',
+     fuel:'Novo Mesto',fuelTip:'optional vor HR',
+     links:[],
+     alts:[{an:'Gruškovje / Macelj',km:'+~25 km',note:'Parallele über Maribor',coords:'46.2230,15.6760',
+            cam:'https://alltrafficcams.com/de/live/grenzubergang/kroatien/slowenien/macelj-gruskovje/'}]},
+
+    {from:'HR',to:'RS',klass:'key',badge:'Kontrolle',badgeClass:'key',
+     name:'Bajakovo / Batrovci',coords:'45.0846,19.1300',lat:45.0846,lng:19.1300,waitKey:'batrovci',
+     cam:'https://alltrafficcams.com/de/live/grenzubergang/serbien/kroatien/batrovci-bajakovo/',
+     desc:'Erste <b>EU-Außengrenze</b> mit Pass- &amp; Zollkontrolle. Im Sommer Wartezeit möglich – Dokumente griffbereit.',
+     fuel:'Lipovac',fuelTip:'in HR vor RS',
+     links:[{l:'Wartezeit (AMSS)',u:'https://www.amss.org.rs/stanje-na-putu/strana/mapa'}],
+     alts:[
+       {an:'Šid / Tovarnik',km:'+~15 km',note:'parallel, oft etwas leerer',coords:'45.1250,19.2200'},
+       {an:'Bogojevo / Erdut',km:'+~70 km',note:'nördlich – bei Großstau',coords:'45.5200,19.0800'}
+     ]},
+
+    {from:'RS',to:'BG',klass:'key',badge:'Kontrolle',badgeClass:'key',
+     name:'Gradina / Kalotina',coords:'43.0007,22.7800',lat:43.0007,lng:22.7800,waitKey:'gradina',
+     cam:'https://alltrafficcams.com/de/live/grenzubergang/serbien/bulgarien/gradina-grenze-kalotina/',
+     desc:'Übergang Serbien ↔ Bulgarien. <b>AMSS</b> zeigt die Live-Wartezeit der serbischen Seite.',
+     fuel:'Pirot',fuelTip:'in RS tanken (oft günstig)',
+     links:[{l:'Wartezeit (AMSS)',u:'https://www.amss.org.rs/stanje-na-putu/strana/mapa'}],
+     alts:[{an:'Vrška Čuka / Kula',km:'+~80 km',note:'ruhiger, kleiner Übergang',coords:'43.9000,22.4500'}]},
+
+    {from:'BG',to:'TR',klass:'hot',badge:'Hauptkontrolle',badgeClass:'hot',
+     name:'Kapıkule / Kapitan Andreevo',coords:'41.7187,26.3530',lat:41.7187,lng:26.3530,
+     cam:'https://alltrafficcams.com/tr/canli/sinir-kapisi-gumruk/bulgaristan/turkiye/kapikule-kapitan-andreevo/',
+     desc:'Der <b>vollste</b> Übergang. Vor der Grenze volltanken (Harmanli).',
+     descOut:' <b>Hinfahrt:</b> HGS am Grenzübergang/PTT besorgen.',
+     fuel:'Harmanli',fuelTip:'in BG volltanken vor TR',
+     links:[{l:'Live (Community)',u:'https://siladayiz.de/'}],
+     alts:[
+       {an:'Hamzabeyli / Lesovo',km:'+~40 km',note:'oft viel leerer',coords:'41.9200,26.6300',
+        cam:'https://alltrafficcams.com/tr/canli/sinir-kapisi-gumruk/bulgaristan/turkiye/hamzabeyli-lesovo/'},
+       {an:'Dereköy / Malko Tarnovo',km:'+~100 km',note:'sehr leer, bergig',coords:'41.9900,27.5400',
+        cam:'https://alltrafficcams.com/tr/canli/sinir-kapisi-gumruk/bulgaristan/turkiye/derekoy-malko-tarnovo/'}
+     ]}
+  ];
+
+  // Etappen (Hinfahrt): 6 Abschnitte vor/zwischen/nach den 5 Grenzen
+  var legsOut=[
+    {cities:['München','Salzburg','Tauern','Villach'],km:510,h:'5 h'},
+    {cities:['Ljubljana'],km:150,h:'1,5 h'},
+    {cities:['Zagreb','Slavonski Brod'],km:300,h:'3 h',sleep:'Zagreb / Slavonski Brod'},
+    {cities:['Belgrad','Niš'],km:400,h:'4 h',sleep:'Belgrad od. Niš (gute Halbzeit ~24 h)'},
+    {cities:['Sofia','Plovdiv','Harmanli'],km:320,h:'3,5 h'},
+    {cities:['Edirne','Çorlu'],km:250,h:'3 h'}
+  ];
+
+  // Maut/Vignetten pro Land (offizielle Links)
+  var toll=[
+    {flag:'🇦🇹',c:'Österreich',t:'<b>Digitale Vignette</b> (Pkw). Für die Reise <b>10-Tage</b> nehmen – sofort gültig (Jahres/2-Monat online erst ab Tag 18). <b>Karawanken-Tunnel = extra Streckenmaut.</b>',u:'https://shop.asfinag.at/'},
+    {flag:'🇸🇮',c:'Slowenien',t:'<b>E-Vinjeta</b> (z. B. 7-Tage), sofort gültig, ans Kennzeichen gebunden.',u:'https://evinjeta.dars.si/'},
+    {flag:'🇭🇷',c:'Kroatien',t:'<b>Keine Vignette</b> – Maut per Ticket an Mautstationen (Karte/Bargeld).',u:''},
+    {flag:'🇷🇸',c:'Serbien',t:'<b>Keine Vignette</b> – Maut per Ticket auf dem Autoput (Karte/Bargeld).',u:''},
+    {flag:'🇧🇬',c:'Bulgarien',t:'<b>E-Vignette</b> (Wochenende/7-Tage), Kamera-Kontrolle. Vor Auffahrt kaufen.',u:'https://bgtoll.bg/'},
+    {flag:'🇹🇷',c:'Türkei',t:'<b>HGS</b> (Pkw) am Grenzübergang oder PTT – <b>Karte</b> empfohlen. Pflicht für Autobahnen + Istanbul-Brücken. Vor Ausreise Schulden zahlen.',u:'https://hgsmusteri.ptt.gov.tr/'}
+  ];
+
+  var docs=[
+    ['Reisepass / Perso','gültig für alle (RS &amp; TR: Pass)'],
+    ['Fahrzeugschein (Zulassung)','Original mitführen'],
+    ['Führerschein',''],
+    ['Grüne Karte (Versicherung)','<b>RS &amp; TR dürfen nicht durchgestrichen</b> sein'],
+    ['Vollmacht','wenn das Auto nicht auf dich zugelassen ist'],
+    ['eSIM / Datenroaming','für RS · BG · TR (kein EU-Roaming)'],
+    ['Bargeld','EUR + etwas Landeswährung (TRY); Karten meist ok'],
+    ['Warnweste · Warndreieck · Verbandskasten','+ Ersatzlampen empfohlen']
+  ];
+
+  var currentDir='out', focusIndex=-1, autoWait=null;
+  var statusState={}; // name -> {i, time}
+  var STNAME=['Status setzen','Frei','Zäh','Stau'];
+
+  function endpointHTML(ep){return '<div class="endpoint"><span class="node"></span><div class="lbl">'+ep.t+'<small>'+ep.s+'</small></div></div>';}
+  function legHTML(L){
+    var s='<div class="leg"><span class="ico">&#8627;</span>'+L.cities.join(' · ')
+        +' <span class="meta">— ~'+L.km+' km · ~'+L.h+'</span>';
+    if(L.sleep) s+='<span class="sleep">🛏️ Übernachtung: '+L.sleep+'</span>';
+    return s+'</div>';
+  }
+  function waitMinutes(b,dir){
+    if(!autoWait||!autoWait.crossings||!b.waitKey) return null;
+    var c=autoWait.crossings[b.waitKey]; if(!c) return null;
+    var field;
+    if(b.waitKey==='batrovci') field=(dir==='out')?'ulaz':'izlaz';   // Hin: Einreise RS; Rück: Ausreise RS
+    else field=(dir==='out')?'izlaz':'ulaz';                          // Gradina: Hin: Ausreise RS; Rück: Einreise
+    var v=c[field]; return (typeof v==='number')?v:null;
+  }
+  function stateFromMin(m){return m<=30?1:(m<=90?2:3);}
+  function fmtTime(iso){try{return new Date(iso).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+  function statusHTML(b){
+    var man=statusState[b.name];
+    if(man&&man.i>0){
+      return '<div class="statusrow"><button class="stbtn s'+man.i+'" data-st="'+b.name+'" type="button"><span class="sd"></span>'+STNAME[man.i]+'</button><span class="sttime">manuell · '+man.time+'</span></div>';
+    }
+    var m=waitMinutes(b,currentDir);
+    if(m!=null){
+      var i=stateFromMin(m);
+      return '<div class="statusrow"><button class="stbtn s'+i+'" data-st="'+b.name+'" type="button"><span class="sd"></span>AMSS ~'+m+' min</button><span class="sttime">Stand '+fmtTime(autoWait.updated)+'</span></div>';
+    }
+    return '<div class="statusrow"><button class="stbtn" data-st="'+b.name+'" type="button"><span class="sd"></span>Status setzen</button><span class="sttime">tippen zum Setzen</span></div>';
+  }
+  function cardHTML(b,dir,idx){
+    var from=dir==='out'?b.from:b.to, to=dir==='out'?b.to:b.from;
+    var desc=b.desc+(dir==='out'&&b.descOut?b.descOut:'');
+    var btns=[];
+    if(b.cam) btns.push('<a class="btn cam span2" href="'+b.cam+'" target="_blank" rel="noopener">&#128247; Live-Kamera · '+b.name.split(' / ')[0]+'</a>');
+    var row=['<a class="btn map" href="'+MAP(b.coords)+'" target="_blank" rel="noopener">Karte &amp; Verkehr</a>'];
+    if(b.fuel) row.push('<a class="btn fuel" href="'+MAP('Tankstelle '+b.fuel)+'" target="_blank" rel="noopener">⛽ '+b.fuelTip+'</a>');
+    b.links.forEach(function(x){row.push('<a class="btn lnk" href="'+x.u+'" target="_blank" rel="noopener">'+x.l+'</a>');});
+    if(row.length%2===1) row[row.length-1]=row[row.length-1].replace('class="btn ','class="btn span2 ');
+    btns=btns.concat(row);
+
+    var alts='';
+    if(b.alts&&b.alts.length){
+      alts='<div class="alts"><h4>Nachbar-Grenze · Umweg</h4>';
+      b.alts.forEach(function(a){
+        var links='<a class="amap" href="'+MAP(a.coords)+'" target="_blank" rel="noopener">Karte</a>';
+        if(a.cam) links='<a class="acam" href="'+a.cam+'" target="_blank" rel="noopener">&#128247; Kamera</a>'+links;
+        alts+='<div class="alt"><span class="an">'+a.an+'</span><span class="km">'+a.km+'</span><span class="note">'+a.note+'</span><span class="alinks">'+links+'</span></div>';
+      });
+      alts+='</div>';
+    }
+    var focus=(idx===focusIndex)?' focus':'';
+    return '<div class="stop'+focus+'" data-idx="'+idx+'"><span class="node"></span><div class="card glass solidish '+(b.klass==='muted'?'muted':'')+'">'
+      +'<div class="crumbs"><span class="cc">'+from+'</span><span class="arrow">&#8594;</span><span class="cc">'+to+'</span><span class="badge '+b.badgeClass+'">'+b.badge+'</span></div>'
+      +'<p class="name">'+b.name+'</p><p class="desc">'+desc+'</p>'
+      +statusHTML(b)
+      +'<div class="btns">'+btns.join('')+'</div>'+alts+'</div></div>';
+  }
+
+  var EP={out:{start:{t:'Fürth',s:'90763 · Start'},end:{t:'Silivri',s:'Otman Ufuk · Ziel'}},
+          ret:{start:{t:'Silivri',s:'Otman Ufuk · Start'},end:{t:'Fürth',s:'90763 · Ziel'}}};
+
+  function render(dir){
+    currentDir=dir;
+    var bs=borders.slice(), legs=legsOut.map(function(L){var c={};for(var k in L)c[k]=L[k];c.cities=L.cities.slice();return c;});
+    if(dir==='ret'){bs.reverse();legs.reverse();legs.forEach(function(L){L.cities.reverse();});}
+    var ep=EP[dir], html=endpointHTML(ep.start);
+    for(var i=0;i<bs.length;i++){html+=legHTML(legs[i]);html+=cardHTML(bs[i],dir,i);}
+    html+=legHTML(legs[bs.length])+endpointHTML(ep.end);
+    document.getElementById('rail').innerHTML=html;
+    updatePrompt(); renderStages(legs);
+  }
+
+  // ---------- Akkordeon-Inhalte ----------
+  function renderToll(){
+    var h='';
+    toll.forEach(function(x){
+      var act=x.u?('<a class="go" href="'+x.u+'" target="_blank" rel="noopener">Kaufen</a>'):'<span class="none">vor Ort</span>';
+      h+='<div class="row2"><span class="flag">'+x.flag+'</span><span class="txt"><b>'+x.c+'</b><br>'+x.t+'</span>'+act+'</div>';
+    });
+    document.getElementById('tollBody').innerHTML=h;
+  }
+  function renderDocs(){
+    var h='';
+    docs.forEach(function(d,i){
+      h+='<label class="chk"><input type="checkbox" data-doc="'+i+'"><span><b>'+d[0]+'</b>'+(d[1]?(' — '+d[1]):'')+'</span></label>';
+    });
+    document.getElementById('docBody').innerHTML=h;
+  }
+  function renderStages(legs){
+    var totKm=0; legsOut.forEach(function(L){totKm+=L.km;});
+    var h='<div class="summary-line total">Gesamt: ~'+totKm.toLocaleString('de-DE')+' km · ~20 h reine Fahrt (ohne Pausen/Grenzwartezeit)</div>';
+    var bs=borders.slice(); if(currentDir==='ret') bs.reverse();
+    for(var i=0;i<legs.length;i++){
+      var to=(i<bs.length)?bs[i].name.split(' / ')[0]:(currentDir==='out'?'Silivri':'Fürth');
+      h+='<div class="summary-line">'+legs[i].cities.join(' · ')+' → <b>'+to+'</b> · ~'+legs[i].km+' km · ~'+legs[i].h+(legs[i].sleep?(' · 🛏️ '+legs[i].sleep):'')+'</div>';
+    }
+    document.getElementById('stageBody').innerHTML=h;
+  }
+
+  // ---------- KI ----------
+  function buildPrompt(dir){
+    var route=dir==='out'?'Fürth (Deutschland) → Silivri (Türkei)':'Silivri (Türkei) → Fürth (Deutschland)';
+    return 'Ich fahre heute die Sıla-Yolu-/İzin-Yolu-Route '+route+'. '
+      +'Prüfe bitte LIVE über aktuelle Webquellen (AMSS Serbien, siladayiz.de, lokale Verkehrs-/Stau-Meldungen, Community-Berichte) die aktuelle Wartezeit und Verkehrslage in Fahrtrichtung an diesen Grenzübergängen und nenne mir pro Abschnitt die beste Option:\n'
+      +'1) Karawankentunnel (AT–SI)\n2) Obrežje/Bregana (SI–HR)\n3) Bajakovo/Batrovci (HR–RS) — Alt.: Šid/Tovarnik\n4) Gradina/Kalotina (RS–BG)\n5) Kapıkule (BG–TR) — Alt.: Hamzabeyli/Lesovo, Dereköy/Malko Tarnovo\n\n'
+      +'Gib mir konkret: aktuelle PKW-Wartezeit, ob ein Übergang gesperrt/überlastet ist, welche Alternative sich gerade lohnt. Datum/Uhrzeit der Info + Quellen nennen.';
+  }
+  function updatePrompt(){var ta=document.getElementById('kiPrompt');if(ta)ta.value=buildPrompt(currentDir);}
+  function openURL(u){window.open(u,'_blank','noopener');}
+  function promptText(){return document.getElementById('kiPrompt').value;}
+  function copyPrompt(cb){var t=promptText();
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){cb&&cb(true);},function(){fb(t,cb);});}else{fb(t,cb);}
+    function fb(t,cb){var ta=document.getElementById('kiPrompt');ta.focus();ta.select();try{document.execCommand('copy');cb&&cb(true);}catch(e){cb&&cb(false);}}}
+  function flashNote(m){var n=document.getElementById('kiNote'),o=n.innerHTML;n.innerHTML='<span class="copied">'+m+'</span>';setTimeout(function(){n.innerHTML=o;},2600);}
+
+  // ---------- Geolocation ----------
+  function hav(a,b,c,d){var R=6371,p=Math.PI/180,x=(c-a)*p,y=(d-b)*p;var u=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*p)*Math.cos(c*p)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(u));}
+  function locate(){
+    if(!navigator.geolocation){showLoc('Standort nicht verfügbar','');return;}
+    document.getElementById('locBtn').textContent='📍 Suche…';
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var la=pos.coords.latitude,ln=pos.coords.longitude,best=-1,bd=1e9;
+      for(var i=0;i<borders.length;i++){var d=hav(la,ln,borders[i].lat,borders[i].lng);if(d<bd){bd=d;best=i;}}
+      focusIndex=best; render(currentDir);
+      var b=borders[best];
+      showLoc('Nächste Grenze: '+b.name.split(' / ')[0], Math.round(bd)+' km');
+      var el=document.querySelector('.stop[data-idx="'+best+'"]'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+      document.getElementById('locBtn').textContent='📍 Nächste Grenze';
+    },function(){showLoc('Standort abgelehnt – bitte erlauben','');document.getElementById('locBtn').textContent='📍 Nächste Grenze';},{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+  }
+  function showLoc(t,km){document.getElementById('locText').textContent=t;document.getElementById('locKm').textContent=km;document.getElementById('locbar').classList.add('show');}
+
+  // ---------- Events ----------
+  document.getElementById('kiBtn').addEventListener('click',function(){var p=document.getElementById('kiPanel');p.classList.toggle('open');if(p.classList.contains('open')){updatePrompt();p.scrollIntoView({behavior:'smooth',block:'nearest'});}});
+  document.getElementById('kiPerplexity').addEventListener('click',function(){openURL('https://www.perplexity.ai/search?q='+encodeURIComponent(promptText()));});
+  document.getElementById('kiGpt').addEventListener('click',function(){openURL('https://chatgpt.com/?q='+encodeURIComponent(promptText()));});
+  document.getElementById('kiGemini').addEventListener('click',function(){copyPrompt(function(ok){openURL('https://gemini.google.com/app');flashNote(ok?'Prompt kopiert – in Gemini einfügen (⌘/Strg+V).':'Bitte Prompt manuell kopieren.');});});
+  document.getElementById('kiClaude').addEventListener('click',function(){copyPrompt(function(ok){openURL('https://claude.ai/new');flashNote(ok?'Prompt kopiert – in Claude einfügen (⌘/Strg+V).':'Bitte Prompt manuell kopieren.');});});
+  document.getElementById('kiCopy').addEventListener('click',function(){copyPrompt(function(ok){flashNote(ok?'Prompt kopiert ✓':'Bitte manuell kopieren.');});});
+
+  document.getElementById('locBtn').addEventListener('click',locate);
+  document.getElementById('driveBtn').addEventListener('click',function(){
+    document.body.classList.toggle('drive');
+    this.classList.toggle('active');
+    if(document.body.classList.contains('drive')&&focusIndex<0){focusIndex=2;render(currentDir);}
+  });
+  document.getElementById('installBtn').addEventListener('click',function(){
+    if(window.__deferredPrompt){window.__deferredPrompt.prompt();window.__deferredPrompt=null;return;}
+    document.getElementById('installHint').classList.toggle('open');
+  });
+
+  var seg=document.getElementById('seg');
+  seg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;[].forEach.call(seg.querySelectorAll('button'),function(x){x.classList.remove('active');});b.classList.add('active');render(b.getAttribute('data-dir'));});
+
+  // Delegierte Klicks im Rail: Status-Punkt + Fahrmodus-Fokus
+  document.getElementById('rail').addEventListener('click',function(e){
+    var st=e.target.closest('.stbtn');
+    if(st){var name=st.getAttribute('data-st');var cur=statusState[name]||{i:0};var ni=(cur.i+1)%4;
+      var tm=ni?new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'';
+      statusState[name]={i:ni,time:tm};render(currentDir);
+      e.stopPropagation();return;}
+    if(document.body.classList.contains('drive')){
+      if(e.target.closest('a')||e.target.closest('button'))return;
+      var stop=e.target.closest('.stop');if(stop){focusIndex=parseInt(stop.getAttribute('data-idx'),10);render(currentDir);}
+    }
+  });
+
+  // Dokumente-Check (in-memory; bleibt während der Sitzung)
+  document.getElementById('docBody').addEventListener('change',function(e){
+    var cb=e.target.closest('input[type=checkbox]');if(!cb)return;
+    cb.setAttribute(cb.checked?'data-on':'data-off','1');
+  });
+
+  (function(){function tick(){var d=new Date();document.getElementById('clock').textContent='Jetzt '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});}tick();setInterval(tick,15000);})();
+
+  // ---------- PWA: Service Worker + Live-Daten ----------
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__deferredPrompt=e;});
+  if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
+
+  function loadWait(){
+    fetch('data/wait-times.json',{cache:'no-store'})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(j){ if(j&&j.crossings){ autoWait=j; render(currentDir); } })
+      .catch(function(){});
+  }
+  loadWait();
+  setInterval(loadWait, 5*60*1000); // alle 5 Min aktualisieren
+
+  // Init
+  renderToll(); renderDocs(); render('out');
+</script>
+</body>
+</html>
