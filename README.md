@@ -1,83 +1,80 @@
-# Grenzen-Check · Sıla Yolu — auf GitHub Pages einrichten
+# GitHub: hochladen & aktualisieren
 
-Damit bekommst du:
-- **Echte App** mit eigenem Icon (Home-Bildschirm, Vollbild)
-- **Zuverlässig offline** (Service Worker cached die App)
-- **Automatische Wartezeiten** für **Batrovci** und **Gradina** (Quelle AMSS), die sich alle 20 Min selbst aktualisieren
-- **Teilbar per Link** — Familie öffnet einfach die Adresse
+## Beim ersten Mal — die 5 Dateien ins Repo
 
-Dauer: ~15–20 Minuten. Du brauchst nur einen kostenlosen GitHub-Account.
+Alle **in denselben Ordner** (Repo-Wurzel), Dateinamen genau so lassen:
 
----
+```
+index.html
+sw.js
+manifest.json
+icon-192.png
+icon-512.png
+```
 
-## 1. GitHub-Account anlegen
-1. Auf **github.com** gehen → **Sign up** → E-Mail, Passwort, Benutzername wählen.
-2. E-Mail bestätigen.
+**So geht's im Browser (kein Git nötig):**
+1. Repo öffnen → **Add file** → **Upload files**
+2. Alle 5 Dateien reinziehen
+3. Unten **Commit changes**
+4. **Settings → Pages** → Branch `main`, Ordner `/ (root)` → **Save**
 
-## 2. Neues Repository erstellen
-1. Oben rechts auf **+** → **New repository**.
-2. **Repository name:** z. B. `grenzen` (klein, ohne Leerzeichen).
-3. **Public** auswählen (wichtig, sonst ist Pages bei Gratis-Konto eingeschränkt).
-4. Häkchen bei **Add a README** NICHT nötig — einfach **Create repository**.
+Nach ~1 Minute ist die Seite unter
+`https://DEINNAME.github.io/DEINREPO/` erreichbar.
 
-## 3. Dateien hochladen
-1. Im neuen Repo auf **Add file** → **Upload files**.
-2. Aus diesem Paket **den kompletten Inhalt** hochladen (per Drag & Drop in den Upload-Bereich):
-   - `index.html`
-   - `sw.js`
-   - `manifest.webmanifest`
-   - `icon.svg`
-   - der Ordner `data/` (mit `wait-times.json`)
-   - der Ordner `scripts/` (mit `fetch-wait.mjs`)
-   - der Ordner `.github/` (mit `workflows/update-wait-times.yml`)
-
-   > Tipp: Ziehst du den **ganzen Ordnerinhalt** rein, bleiben die Unterordner erhalten.
-   > Falls `.github` beim Drag & Drop nicht mitkommt (manche Systeme verstecken Punkt-Ordner),
-   > lege ihn manuell an: **Add file → Create new file**, als Namen
-   > `.github/workflows/update-wait-times.yml` eintippen (die Schrägstriche erzeugen die Ordner)
-   > und den Inhalt der Datei einfügen.
-3. Unten **Commit changes**.
-
-## 4. GitHub Pages einschalten
-1. Im Repo oben auf **Settings** → links **Pages**.
-2. Unter **Build and deployment → Source**: **Deploy from a branch**.
-3. **Branch:** `main`, Ordner **/(root)** → **Save**.
-4. Kurz warten (1–2 Min). Oben erscheint die Adresse, z. B.
-   **`https://deinname.github.io/grenzen/`** — das ist deine App.
-
-## 5. Den Wartezeiten-Roboter scharf schalten
-1. Im Repo auf **Actions**.
-2. Falls gefragt: **„I understand my workflows, go ahead and enable them"** bestätigen.
-3. Links **„Wartezeiten aktualisieren"** anklicken → rechts **Run workflow** → **Run workflow**.
-   - Das ist der erste manuelle Lauf. Danach läuft er automatisch alle 20 Minuten.
-4. Nach ~1 Min sollte unter **data/wait-times.json** etwas wie
-   `"crossings": { "batrovci": { "izlaz": 30, "ulaz": 60 }, ... }` stehen.
-
-> **Wichtig (einmalig):** Damit der Roboter zurückschreiben darf:
-> **Settings → Actions → General → Workflow permissions** →
-> **„Read and write permissions"** auswählen → **Save**.
-> (Falls der erste Lauf mit „permission denied" beim Push scheitert, war das der Grund —
-> Einstellung setzen und Workflow nochmal starten.)
-
-## 6. Als App aufs Handy
-- **iPhone (Safari):** Adresse öffnen → Teilen-Symbol → **Zum Home-Bildschirm**.
-- **Android (Chrome):** Adresse öffnen → Menü ⋮ → **App installieren** / **Zum Startbildschirm**.
-
-Fertig. Beim nächsten Öffnen lädt die App sofort, funktioniert offline, und die
-Wartezeiten an Batrovci/Gradina stehen automatisch drin (grün/gelb/rot + „Stand HH:MM").
+> **Muss HTTPS sein.** Auf `github.io` ist das automatisch der Fall — nur deshalb
+> funktioniert der Offline-Modus. Von einer lokalen Datei (`file://`) aus geht er nicht.
 
 ---
 
-## Gut zu wissen / Feinheiten
-- **Nur serbische Grenzen automatisch:** AMSS veröffentlicht nur die serbische Seite.
-  Darum kommen Auto-Zahlen nur für **Batrovci** und **Gradina** — genau die zwei Engstellen.
-  Karawanken, Bregana, Kapıkule bleiben manuell (antippen) oder über den KI-Button.
-- **Manuell schlägt Auto:** Tippst du den Status-Punkt selbst, gilt dein Wert. Nochmal
-  durchtippen bis „Status setzen" → wieder automatisch.
-- **Wenn AMSS mal die Formulierung ändert**, kann der Parser in `scripts/fetch-wait.mjs`
-  eine Kleinigkeit brauchen. Schick mir dann den Inhalt von `data/wait-times.json`
-  (oder eine AMSS-Textzeile), ich passe das Muster an.
-- **App aktualisieren:** Lädst du später eine neue `index.html` hoch, holt der Service
-  Worker sie beim nächsten Start automatisch (Version in `sw.js` hochzählen erzwingt das).
-- **iPhone-Icon:** SVG klappt meist; falls iOS doch ein Vorschaubild nimmt, sag Bescheid,
-  dann lege ich zusätzlich ein PNG-Icon bei.
+## Aufs Handy holen
+
+- **Android/Chrome:** Seite öffnen → Menü ⋮ → **App installieren**
+- **iPhone/Safari:** Seite öffnen → Teilen-Symbol → **Zum Home-Bildschirm**
+
+Danach: eigenes Icon, Vollbild, **funktioniert ohne Internet**.
+Einmal mit Netz öffnen, damit sie sich speichern kann — danach ist sie offline da.
+
+**Auf beide Handys installieren** (du + Beifahrer).
+
+---
+
+## Wenn du später etwas änderst
+
+Immer **beide** Schritte, sonst merkt das Handy nichts:
+
+1. `index.html` im Repo ändern (Bleistift ✏️ → bearbeiten → Commit)
+2. **`sw.js` öffnen und die Zahl hochzählen:**
+   ```js
+   const CACHE = 'grenzen-v3';   →   const CACHE = 'grenzen-v4';
+   ```
+   Commit.
+
+Beim nächsten Öffnen der App erscheint oben ein blauer Balken:
+**„🔄 Neue Version verfügbar → Jetzt aktualisieren"** — antippen, fertig.
+Neu installieren musst du **nie**.
+
+> Vergisst du Schritt 2, läuft auf dem Handy die alte Version weiter,
+> weil der Cache-Name unverändert ist. Das ist der einzige Stolperstein.
+
+---
+
+## Was offline funktioniert — und was nicht
+
+| ✅ Ohne Netz | ❌ Braucht Netz |
+|---|---|
+| Checkliste (inkl. deiner Haken) | Live-Kameras |
+| Maut-Status & Spuren (ENC / ENP / HGS / FLEX-Spur) | Google-Maps-Links |
+| Tankstopps mit Adressen | HAK- / AMSS-Wartezeiten |
+| Etappen, km, Grenzen | KI-Live-Check |
+| Status-Punkte (frei / zäh / Stau) | |
+
+Genau richtig für **Serbien und Bulgarien**, wo der Empfang wackelt.
+
+---
+
+## Zwei Hinweise
+
+- **Deine Checklisten-Haken hängen an der Adresse.** Änderst du später den Repo-Namen
+  oder den Dateinamen, sind sie weg. Also: `index.html` heißt für immer `index.html`.
+- Die Haken liegen **nur auf dem jeweiligen Handy** — sie werden nicht zwischen
+  deinem und dem zweiten Handy synchronisiert.

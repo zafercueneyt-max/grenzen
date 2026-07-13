@@ -1,0 +1,32 @@
+{
+  "name": "Grenzen-Check · Sıla Yolu",
+  "short_name": "Grenzen",
+  "description": "Grenzen, Maut-Spuren, Tankstopps und Checkliste für die Route Fürth ⇄ Silivri – funktioniert offline.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4F7FB",
+  "theme_color": "#EEF3FA",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
