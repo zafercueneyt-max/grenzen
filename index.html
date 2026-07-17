@@ -281,6 +281,10 @@
 
   <div class="sections">
     <details class="acc glass solidish">
+      <summary>🚙 Meine Maut-Geräte &amp; Spur <span class="chev">›</span></summary>
+      <div class="body" id="mymautBody"></div>
+    </details>
+    <details class="acc glass solidish">
       <summary>🎫 Vignetten &amp; Maut <span class="chev">›</span></summary>
       <div class="body" id="tollBody"></div>
     </details>
@@ -310,6 +314,8 @@
      camRet:'https://kamere.dars.si/kamere/hrusica/CP_Hrusica_IPCAM.jpg',
      desc:'Meist <b>kein Stau</b> – aber <b>Tunnelmaut</b> (extra, nicht in Vignette). Vignetten AT/SI nötig.',
      fuel:'Villach',fuelTip:'In AT/SI tanken',
+     spurOut:'🇦🇹 Streckenmaut Flex: linke grüne Spur, nicht anhalten.',
+     spurRet:'🇸🇮 Karawanken Nord: DARS an Mautstelle Hrušica zahlen – Flex gilt hier NICHT.',
      links:[],
      alts:[{an:'Loiblpass (Ljubelj)',km:'+~15 km',note:'mautfreier Pass, langsamer',coords:'46.4470,14.2640'}]},
 
@@ -380,6 +386,14 @@
     {flag:'🇹🇷',c:'Türkei',t:'<b>HGS</b> (Pkw) am Grenzübergang oder PTT – <b>Karte</b> empfohlen. Pflicht für Autobahnen + Istanbul-Brücken. Vor Ausreise Schulden zahlen.',u:'https://hgsmusteri.ptt.gov.tr/'}
   ];
 
+  // Meine gekauften Maut-Geräte + welche Spur
+  var mymaut=[
+    {flag:'🇷🇸',c:'Serbien · ENpay TAG',g:'TAG an der Windschutzscheibe',s:'<b>ENP-Spur</b> nehmen – nicht anhalten, Schranke öffnet automatisch (~6 % Rabatt). Geschlossenes System: bei <b>Einfahrt und Ausfahrt</b> jeweils die ENP-Spur.'},
+    {flag:'🇭🇷',c:'Kroatien · ENC-Box',g:'ENC-Gerät an der Scheibe',s:'<b>ENC-Spur</b> nehmen – durchfahren, Schranke öffnet per Funk. 2026 noch klassische Mautstellen (Free-Flow „Crolibertas" erst ab 03/2027). Ein- und Ausfahrt jeweils ENC-Spur.'},
+    {flag:'🇦🇹',c:'Österreich · Streckenmaut Flex',g:'kennzeichengebunden (keine Box)',s:'<b>Linke, grün markierte Spur</b> (oder jede normale Spur, NICHT die rechte GO-Spur für LKW). Kamera liest Kennzeichen, Schranke öffnet. Deckt <b>Tauern/Katschberg + Karawanken Richtung Süd</b>. ⚠️ Rückfahrt: Karawanken Richtung Nord zahlt <b>DARS</b> an der Mautstelle Hrušica – Flex gilt dort nicht.'},
+    {flag:'🇦🇹',c:'Österreich · 2× 10-Tage-Vignette',g:'Kennzeichen/Kleber',s:'<b>Keine eigene Spur</b> – gilt fürs normale Autobahnnetz. Sondermaut (Tauern, Karawanken) ist damit NICHT bezahlt → dafür deine Flex. Tipp: die 2. Vignette erst kurz vor der Rückfahrt gültig setzen.'}
+  ];
+
   var docs=[
     ['Reisepass / Perso','gültig für alle (RS &amp; TR: Pass)'],
     ['Fahrzeugschein (Zulassung)','Original mitführen'],
@@ -412,6 +426,7 @@
     var from=dir==='out'?b.from:b.to, to=dir==='out'?b.to:b.from;
     var desc=b.desc+(dir==='out'&&b.descOut?b.descOut:'');
     var btns=[];
+    var spur=(dir==='out'?b.spurOut:b.spurRet);
     var camUrl=(dir==='out'?b.camOut:b.camRet)||b.cam;
     if(camUrl) btns.push('<a class="btn cam span2" href="'+camUrl+'" target="_blank" rel="noopener">&#128247; Live-Kamera · '+b.name.split(' / ')[0]+' · '+(dir==='out'?'Hin':'Rück')+'</a>');
     var row=['<a class="btn map" href="'+MAP(b.coords)+'" target="_blank" rel="noopener">Karte &amp; Verkehr</a>'];
@@ -434,6 +449,7 @@
     return '<div class="stop'+focus+'" data-idx="'+idx+'"><span class="node"></span><div class="card glass solidish '+(b.klass==='muted'?'muted':'')+'">'
       +'<div class="crumbs"><span class="cc">'+from+'</span><span class="arrow">&#8594;</span><span class="cc">'+to+'</span><span class="badge '+b.badgeClass+'">'+b.badge+'</span></div>'
       +'<p class="name">'+b.name+'</p><p class="desc">'+desc+'</p>'
+      +(spur?'<p class="desc" style="color:var(--go);font-weight:750;margin-top:-4px">'+spur+'</p>':'')
       +statusHTML(b)
       +'<div class="btns">'+btns.join('')+'</div>'+alts+'</div></div>';
   }
@@ -460,6 +476,13 @@
       h+='<div class="row2"><span class="flag">'+x.flag+'</span><span class="txt"><b>'+x.c+'</b><br>'+x.t+'</span>'+act+'</div>';
     });
     document.getElementById('tollBody').innerHTML=h;
+  }
+  function renderMymaut(){
+    var h='';
+    mymaut.forEach(function(x){
+      h+='<div class="row2"><span class="flag">'+x.flag+'</span><span class="txt"><b>'+x.c+'</b><br><span style="color:var(--muted);font-size:11.5px">'+x.g+'</span><br><span style="color:var(--go);font-weight:700">➜ '+x.s+'</span></span></div>';
+    });
+    document.getElementById('mymautBody').innerHTML=h;
   }
   function renderDocs(){
     var h='';
@@ -566,7 +589,7 @@
   })();
 
   // Init
-  renderToll(); renderDocs(); render('out');
+  renderToll(); renderMymaut(); renderDocs(); render('out');
 </script>
 </body>
 </html>
