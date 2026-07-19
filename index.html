@@ -4,191 +4,220 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Grenzen Live · Fürth ⇄ Silivri</title>
-<meta name="theme-color" content="#0C1420" />
+<meta name="theme-color" content="#EEF3FA" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Grenzen" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+<link rel="icon" href="./icon-192.png" />
 <style>
   :root{
-    --bg:#0C1420; --ink:#EAF1FB; --muted:#8DA0BE;
-    --go:#2CC685; --caution:#F4A53A; --busy:#EE5A52; --steel:#5C7299;
-    --glass:rgba(21,32,51,.55);
-    --glass-strong:rgba(20,30,49,.74);
-    --glass-edge:rgba(255,255,255,.14);
-    --glass-hi:rgba(255,255,255,.22);
-    --line:#2A3A57;
+    /* Helle, freundliche Palette – Kontraste nach design-system (>= 4.5:1) */
+    --bg:#F4F7FB;
+    --ink:#1C1917;          /* Fließtext dunkel  */
+    --muted:#55606F;        /* ~6:1 auf hell     */
+    --blue:#1D4ED8;         /* CTA, satter Blau  */
+    --blue-soft:#EFF4FF;
+    --go:#0F8A5F;           /* frei              */
+    --go-soft:#E6F6EF;
+    --caution:#B45309;      /* zäh (Text)        */
+    --caution-soft:#FEF3E2;
+    --busy:#B91C1C;         /* Stau              */
+    --busy-soft:#FDECEC;
+    --steel:#9AA8BC;
+    --line:#DFE6EF;
+
+    --glass-tint:rgba(255,255,255,.66);
+    --glass-tint-strong:rgba(255,255,255,.86);
+    --glass-edge:rgba(255,255,255,.9);
+
+    --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+    --space-6:24px; --space-8:32px;
     --r:18px;
   }
-  *{box-sizing:border-box}
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
   html,body{margin:0}
   body{
     background:
-      radial-gradient(1100px 560px at 18% -160px,#1c3566 0%,transparent 58%),
-      radial-gradient(1000px 520px at 95% 10%,#163a4a 0%,transparent 55%),
+      radial-gradient(1100px 560px at 12% -140px,#DCEBFF 0%,transparent 60%),
+      radial-gradient(900px 520px at 96% 4%,#DFF3EA 0%,transparent 58%),
       var(--bg);
     background-attachment:fixed;
     color:var(--ink);
     font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased;line-height:1.45;
+    line-height:1.45;
     padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 28px);
   }
   .wrap{max-width:680px;margin:0 auto;padding:22px 16px 0}
 
-  .glass{
-    backdrop-filter:blur(18px) saturate(160%);
-    -webkit-backdrop-filter:blur(18px) saturate(160%);
-    background:var(--glass);
-    border:1px solid var(--glass-edge);
-    box-shadow:inset 0 1px 0 var(--glass-hi), 0 8px 24px rgba(0,0,0,.35);
-    position:relative;
-  }
-  .glass::before{
-    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-    background:linear-gradient(135deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 42%);
-  }
-  .glass.solidish{background:var(--glass-strong)}
+  .bar{display:none;align-items:center;gap:10px;border-radius:12px;padding:10px 12px;
+    margin:0 0 14px;font-size:13px;font-weight:600;line-height:1.35}
+  .bar.show{display:flex}
+  .bar.upd{background:var(--blue-soft);border:1px solid #C6D8FB;color:#12379E}
+  .bar.upd button{margin-left:auto;flex:0 0 auto;border:0;border-radius:999px;cursor:pointer;
+    background:var(--blue);color:#fff;font-family:inherit;font-weight:700;font-size:12.5px;
+    padding:8px 13px;white-space:nowrap}
+  .bar.off{background:var(--caution-soft);border:1px solid #F3C58A;color:#8A3E07}
 
-  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;
-    color:var(--go);margin:0 0 8px;display:flex;align-items:center;gap:9px}
-  .eyebrow::before{content:"";width:22px;height:2px;background:var(--go);display:inline-block}
+  /* Glas: Blur NIE auf dem Textcontainer (schrift-schaerfe) -> nur auf ::before */
+  .glass{position:relative;isolation:isolate;
+    border:1px solid var(--glass-edge);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 6px 20px rgba(28,45,80,.08)}
+  .glass::before{
+    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+    background:var(--glass-tint);
+    backdrop-filter:blur(18px) saturate(150%);
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
+  }
+  .glass.solidish::before{background:var(--glass-tint-strong)}
+
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--blue);margin:0 0 var(--space-2);display:flex;align-items:center;gap:9px}
+  .eyebrow::before{content:"";width:22px;height:2px;background:var(--blue);display:inline-block}
   .titlerow{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
-  h1{font-size:clamp(28px,7.5vw,40px);line-height:1.0;margin:0;font-weight:850;
-    letter-spacing:-.01em;text-transform:uppercase}
+  h1{font-size:clamp(28px,7.5vw,40px);line-height:1.02;margin:0;font-weight:800;
+    letter-spacing:-.01em;text-transform:uppercase;color:#0F172A}
   .install-btn{flex:0 0 auto;border-radius:999px;padding:9px 13px;font-family:inherit;
-    font-weight:850;font-size:12.5px;color:var(--ink);cursor:pointer;white-space:nowrap;
-    border:1px solid var(--glass-edge);background:var(--glass);
-    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    font-weight:700;font-size:12.5px;color:var(--ink);cursor:pointer;white-space:nowrap;
+    border:1px solid var(--line);background:#fff}
   .install-hint{display:none;margin-top:10px;border-radius:14px;padding:12px 14px;font-size:12.5px;
-    color:#cdd9ee;line-height:1.6}
+    color:var(--muted);line-height:1.6}
   .install-hint.open{display:block;animation:glass-in .3s cubic-bezier(.22,1,.36,1)}
   .install-hint b{color:var(--ink)}
 
   .ki-launch{
-    width:100%;margin-top:14px;border:1px solid rgba(44,198,133,.5);border-radius:999px;
-    padding:14px 16px;font-family:inherit;font-weight:850;font-size:15px;letter-spacing:.02em;
-    color:#06231b;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
-    background:linear-gradient(180deg,#52e0a4 0%,#2CC685 100%);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 8px 22px rgba(44,198,133,.28);
-    transition:transform .25s cubic-bezier(.22,1,.36,1), filter .2s ease}
-  .ki-launch:active{transform:translateY(0) scale(.99)}
-  .ki-dot{width:9px;height:9px;border-radius:50%;background:#06231b;animation:pulse 1.8s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(6,35,27,.45)}70%{box-shadow:0 0 0 7px rgba(6,35,27,0)}100%{box-shadow:0 0 0 0 rgba(6,35,27,0)}}
+    width:100%;margin-top:14px;border:1px solid #1A45C4;border-radius:999px;
+    padding:14px 16px;font-family:inherit;font-weight:700;font-size:15px;letter-spacing:.01em;
+    color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
+    background:linear-gradient(180deg,#2A5CE8 0%,#1D4ED8 100%);
+    box-shadow:0 8px 20px rgba(29,78,216,.22);
+    transition:filter .2s ease}
+  .ki-launch:active{filter:brightness(.95)}
+  .ki-dot{width:9px;height:9px;border-radius:50%;background:#fff;animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}70%{box-shadow:0 0 0 7px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
 
   .ki-panel{margin-top:12px;border-radius:var(--r);padding:15px;display:none}
   .ki-panel.open{display:block;animation:glass-in .3s cubic-bezier(.22,1,.36,1)}
-  @keyframes glass-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
-  .ki-panel h3{margin:0 0 4px;font-size:15px;font-weight:850}
+  @keyframes glass-in{from{opacity:0}to{opacity:1}}
+  .ki-panel h3{margin:0 0 4px;font-size:15px;font-weight:700}
   .ki-panel .sub{margin:0 0 11px;color:var(--muted);font-size:12.5px}
-  .ki-panel label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-    color:var(--muted);font-weight:850;margin:0 0 6px}
+  .ki-panel label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;margin:0 0 6px}
   .ki-panel textarea{width:100%;min-height:150px;resize:vertical;border-radius:12px;padding:11px 12px;
     font-family:inherit;font-size:13px;line-height:1.5;color:var(--ink);
-    background:#0c1626;border:1px solid var(--line);outline:none}
-  .ki-panel textarea:focus{border-color:var(--go)}
+    background:#fff;border:1px solid var(--line);outline:none}
+  .ki-panel textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
   .ki-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
-  .ki-actions button{font-family:inherit;font-weight:850;font-size:13.5px;border-radius:11px;
+  .ki-actions button{font-family:inherit;font-weight:700;font-size:13.5px;border-radius:11px;
     padding:12px 8px;cursor:pointer;min-height:46px;color:var(--ink);
-    border:1px solid var(--glass-edge);background:var(--glass);
-    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-  .ki-actions .primary{grid-column:1 / -1;background:linear-gradient(180deg,#52e0a4,#2CC685);
-    color:#06231b;border-color:rgba(44,198,133,.5)}
+    border:1px solid var(--line);background:#fff}
+  .ki-actions .primary{grid-column:1 / -1;background:var(--blue);color:#fff;border-color:#1A45C4}
   .ki-note{margin:10px 2px 0;color:var(--muted);font-size:11.5px;line-height:1.5}
-  .copied{color:var(--go);font-weight:850}
+  .copied{color:var(--go);font-weight:700}
 
   .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
-  .tool{border-radius:12px;padding:11px 10px;font-family:inherit;font-weight:850;font-size:13px;
-    cursor:pointer;color:var(--ink);border:1px solid var(--glass-edge);background:var(--glass);
-    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);min-height:46px;
+  .tool{border-radius:12px;padding:11px 10px;font-family:inherit;font-weight:700;font-size:13px;
+    cursor:pointer;color:var(--ink);border:1px solid var(--line);background:#fff;min-height:46px;
     display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none}
-  .tool.active{background:var(--go);color:#05221a;border-color:rgba(44,198,133,.5)}
-  .clock{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:800}
+  .tool.active{background:var(--go);color:#fff;border-color:#0B6B49}
+  .clock{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
 
   .seg{display:flex;border-radius:999px;padding:4px;gap:4px;margin-top:10px}
-  .seg button{flex:1;border:0;background:transparent;color:var(--muted);font-weight:850;
+  .seg button{flex:1;border:0;background:transparent;color:var(--muted);font-weight:700;
     font-size:13px;padding:11px 8px;border-radius:999px;cursor:pointer;font-family:inherit;
     transition:background .2s,color .2s}
-  .seg button.active{background:var(--go);color:#05221a}
+  .seg button.active{background:var(--blue);color:#fff}
 
   .locbar{display:none;margin-top:12px;border-radius:14px;padding:11px 14px;font-size:13.5px;
-    font-weight:800;align-items:center;gap:9px}
+    font-weight:600;align-items:center;gap:9px}
   .locbar.show{display:flex;animation:glass-in .3s cubic-bezier(.22,1,.36,1)}
-  .locbar .pin{color:var(--go)}
-  .locbar .km{margin-left:auto;color:var(--caution);font-weight:850}
+  .locbar .pin{color:var(--blue)}
+  .locbar .km{margin-left:auto;color:var(--caution);font-weight:700}
 
-  .hint{margin:16px 2px 6px;color:var(--muted);font-size:12.5px;text-transform:uppercase;
-    letter-spacing:.14em;font-weight:800}
+  .hint{margin:18px 2px 6px;color:var(--muted);font-size:12px;text-transform:uppercase;
+    letter-spacing:.12em;font-weight:700}
 
   .rail{position:relative;margin-top:6px;padding-left:30px}
   .rail::before{content:"";position:absolute;left:9px;top:10px;bottom:18px;width:2px;
-    background:repeating-linear-gradient(var(--steel) 0 8px,transparent 8px 16px);opacity:.55}
+    background:repeating-linear-gradient(var(--steel) 0 8px,transparent 8px 16px);opacity:.7}
   .node{position:absolute;left:-30px;top:18px;width:20px;height:20px;border-radius:50%;
-    background:rgba(27,40,64,.7);border:2px solid var(--steel)}
-  .endpoint .node{top:6px;background:var(--go);border-color:var(--go);box-shadow:0 0 14px rgba(44,198,133,.5)}
+    background:#fff;border:2px solid var(--steel)}
+  .endpoint .node{top:6px;background:var(--blue);border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-soft)}
   .endpoint{position:relative;margin:0 0 12px;min-height:30px}
-  .endpoint .lbl{font-weight:850;font-size:16px;padding-top:2px}
-  .endpoint .lbl small{display:block;color:var(--muted);font-weight:800;font-size:11px;
-    text-transform:uppercase;letter-spacing:.12em;margin-top:2px}
+  .endpoint .lbl{font-weight:800;font-size:16px;padding-top:2px}
+  .endpoint .lbl small{display:block;color:var(--muted);font-weight:700;font-size:11px;
+    text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
 
-  .leg{position:relative;margin:0 0 12px;color:var(--muted);font-size:12.5px;font-weight:700;padding-left:2px}
-  .leg .ico{color:var(--steel);font-weight:900;margin-right:6px}
-  .leg .meta{color:var(--ink);font-weight:800}
-  .leg .sleep{display:block;margin-top:3px;color:var(--caution);font-weight:800;font-size:12px}
+  .leg{position:relative;margin:0 0 12px;color:var(--muted);font-size:12.5px;font-weight:600;padding-left:2px}
+  .leg .ico{color:var(--steel);font-weight:700;margin-right:6px}
+  .leg .meta{color:var(--ink);font-weight:700}
+  .leg .fuel{display:block;margin-top:3px;color:var(--caution);font-weight:600;font-size:12px}
+  .leg .sleep{display:block;margin-top:3px;color:var(--blue);font-weight:600;font-size:12px}
 
   .stop{position:relative;margin:0 0 14px}
   .card{border-radius:var(--r);padding:15px 15px 13px}
-  .card.muted{opacity:.92}
   .crumbs{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:7px}
-  .cc{font-size:11px;font-weight:850;letter-spacing:.08em;color:var(--ink);
-    background:rgba(10,18,30,.55);border:1px solid var(--glass-edge);padding:3px 8px;border-radius:6px}
-  .arrow{color:var(--steel);font-weight:800}
-  .badge{margin-left:auto;font-size:10.5px;font-weight:850;letter-spacing:.1em;
+  .cc{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--ink);
+    background:#fff;border:1px solid var(--line);padding:3px 8px;border-radius:6px}
+  .arrow{color:var(--steel);font-weight:700}
+  .badge{margin-left:auto;font-size:10.5px;font-weight:700;letter-spacing:.08em;
     text-transform:uppercase;padding:3px 9px;border-radius:999px}
-  .badge.go{color:var(--go);background:rgba(44,198,133,.12)}
-  .badge.key{color:var(--caution);background:rgba(244,165,58,.16)}
-  .badge.hot{color:var(--busy);background:rgba(238,90,82,.16)}
-  .name{font-size:19px;font-weight:850;margin:2px 0 2px;letter-spacing:-.01em}
-  .desc{margin:0 0 10px;color:#b9c8e2;font-size:13.5px}
+  .badge.go{color:#0B6B49;background:var(--go-soft)}
+  .badge.key{color:var(--caution);background:var(--caution-soft)}
+  .badge.hot{color:var(--busy);background:var(--busy-soft)}
+  .name{font-size:19px;font-weight:800;margin:2px 0;letter-spacing:-.01em}
+  .desc{margin:0 0 10px;color:#3A4453;font-size:13.5px}
   .desc b{color:var(--ink);font-weight:700}
 
   .statusrow{display:flex;align-items:center;gap:9px;margin:0 0 11px;flex-wrap:wrap}
-  .stbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--glass-edge);
-    background:rgba(10,18,30,.45);border-radius:999px;padding:6px 11px;cursor:pointer;
-    font-family:inherit;font-weight:850;font-size:12.5px;color:var(--ink)}
+  .stbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
+    background:#fff;border-radius:999px;padding:6px 11px;cursor:pointer;
+    font-family:inherit;font-weight:700;font-size:12.5px;color:var(--ink)}
   .stbtn .sd{width:11px;height:11px;border-radius:50%;background:var(--steel)}
-  .stbtn.s1 .sd{background:var(--go)} .stbtn.s2 .sd{background:var(--caution)} .stbtn.s3 .sd{background:var(--busy)}
-  .stbtn.s1{border-color:rgba(44,198,133,.4)} .stbtn.s2{border-color:rgba(244,165,58,.4)} .stbtn.s3{border-color:rgba(238,90,82,.4)}
-  .sttime{color:var(--muted);font-size:11.5px;font-weight:800}
+  .stbtn.s1 .sd{background:var(--go)} .stbtn.s2 .sd{background:#EA580C} .stbtn.s3 .sd{background:var(--busy)}
+  .stbtn.s1{border-color:#9FD9C2;background:var(--go-soft)}
+  .stbtn.s2{border-color:#F3C58A;background:var(--caution-soft)}
+  .stbtn.s3{border-color:#F0AFAF;background:var(--busy-soft)}
+  .sttime{color:var(--muted);font-size:11.5px;font-weight:600}
 
   .btns{display:grid;grid-template-columns:1fr 1fr;gap:9px}
   a.btn,button.btn{text-decoration:none;text-align:center;border-radius:11px;padding:11px 8px;
-    font-size:13.5px;font-weight:800;border:1px solid var(--glass-edge);color:var(--ink);
-    background:var(--glass);display:flex;align-items:center;justify-content:center;min-height:44px;
-    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-family:inherit;cursor:pointer}
-  a.btn.map{background:rgba(16,36,58,.6);border-color:rgba(63,121,180,.4);color:#bfe0ff}
-  a.btn.fuel{background:rgba(58,44,16,.5);border-color:rgba(244,165,58,.4);color:#ffd9a0}
-  a.btn.cam{background:linear-gradient(180deg,#52e0a4,#2CC685);border-color:rgba(44,198,133,.5);
-    color:#05221a;font-size:14.5px;font-weight:850;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 6px 16px rgba(44,198,133,.22)}
+    font-size:13.5px;font-weight:700;border:1px solid var(--line);color:var(--ink);
+    background:#fff;display:flex;align-items:center;justify-content:center;min-height:44px;
+    font-family:inherit;cursor:pointer}
+  a.btn.map{background:var(--blue-soft);border-color:#C6D8FB;color:#12379E}
+  a.btn.fuel{background:var(--caution-soft);border-color:#F3C58A;color:#8A3E07}
+  a.btn.cam{background:var(--go);border-color:#0B6B49;color:#fff;font-size:14.5px;
+    box-shadow:0 4px 12px rgba(15,138,95,.2)}
   a.btn.span2,button.btn.span2{grid-column:1 / -1}
+  a.btn.gmap{background:#fff;border-color:var(--blue);color:var(--blue);font-size:12.5px}
+  a.btn.gmap2{background:var(--blue);border-color:#1A45C4;color:#fff;font-size:12.5px}
+  .altroutes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:2px 0 10px;width:100%}
+  .altroutes .btn{min-height:38px;padding:8px 6px;font-size:11.5px}
+  .alt.isrec + .altroutes{margin-top:-2px}
 
   .alts{margin-top:12px;border-top:1px dashed var(--line);padding-top:11px}
-  .alts h4{margin:0 0 9px;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:850}
+  .alts h4{margin:0 0 9px;font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:700}
   .alt{display:flex;align-items:center;gap:8px;margin:0 0 10px;flex-wrap:wrap}
   .alt:last-child{margin-bottom:0}
-  .alt .an{font-weight:800;font-size:13.5px}
-  .alt .km{font-size:11px;font-weight:850;color:var(--caution);background:rgba(244,165,58,.13);padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .alt.isrec{background:var(--go-soft);border:1px solid #9FD9C2;border-radius:12px;padding:9px 10px}
+  .alt .rectag{flex:0 0 100%;order:-1;font-size:10px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;color:#0B6B49;margin-bottom:1px}
+  .alt .an{font-weight:700;font-size:13.5px}
+  .alt .km{font-size:11px;font-weight:700;color:var(--caution);background:var(--caution-soft);padding:2px 8px;border-radius:999px;white-space:nowrap}
   .alt .note{color:var(--muted);font-size:12px;flex:1 1 110px}
   .alt .alinks{display:flex;gap:7px;margin-left:auto}
-  .alt a.amap,.alt a.acam{text-decoration:none;font-size:12px;font-weight:800;padding:7px 11px;
-    border-radius:9px;min-height:34px;display:flex;align-items:center;border:1px solid var(--glass-edge)}
-  .alt a.amap{color:#bfe0ff;background:rgba(16,36,58,.55);border-color:rgba(63,121,180,.4)}
-  .alt a.acam{color:#06231b;background:linear-gradient(180deg,#52e0a4,#2CC685);border-color:rgba(44,198,133,.5)}
+  .alt a.amap,.alt a.acam{text-decoration:none;font-size:12px;font-weight:700;padding:7px 11px;
+    border-radius:9px;min-height:34px;display:flex;align-items:center;border:1px solid var(--line)}
+  .alt a.amap{color:#12379E;background:var(--blue-soft);border-color:#C6D8FB}
+  .alt a.acam{color:#fff;background:var(--go);border-color:#0B6B49}
 
-  /* Info-Akkordeon */
   .sections{margin-top:18px;display:flex;flex-direction:column;gap:10px}
   details.acc{border-radius:var(--r);overflow:hidden}
-  details.acc summary{list-style:none;cursor:pointer;padding:14px 15px;font-weight:850;font-size:15px;
+  details.acc summary{list-style:none;cursor:pointer;padding:14px 15px;font-weight:700;font-size:15px;
     display:flex;align-items:center;gap:10px}
   details.acc summary::-webkit-details-marker{display:none}
   details.acc summary .chev{margin-left:auto;color:var(--muted);transition:transform .2s}
@@ -196,17 +225,45 @@
   .acc .body{padding:0 15px 15px}
   .row2{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-top:1px solid var(--line)}
   .row2 .flag{font-size:18px;line-height:1.2;flex:0 0 auto}
-  .row2 .txt{flex:1 1 auto;font-size:13px;color:#c5d2e8}
+  .row2 .txt{flex:1 1 auto;font-size:13px;color:#3A4453}
   .row2 .txt b{color:var(--ink)}
-  .row2 a.go{flex:0 0 auto;text-decoration:none;font-size:12px;font-weight:850;color:#06231b;
-    background:linear-gradient(180deg,#52e0a4,#2CC685);padding:8px 12px;border-radius:9px;align-self:center}
-  .row2 .none{flex:0 0 auto;font-size:11px;font-weight:850;color:var(--muted);align-self:center}
+  .row2 a.go{flex:0 0 auto;text-decoration:none;font-size:12px;font-weight:700;color:#fff;
+    background:var(--blue);padding:8px 12px;border-radius:9px;align-self:center}
+  .row2 .none{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--muted);align-self:center}
+  .row2 a.go.warn{background:#EA580C}
+  .row2.todo{background:var(--busy-soft);border-radius:10px;padding:10px 8px;margin-top:4px}
+  .pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    padding:2px 7px;border-radius:999px;vertical-align:2px}
+  .pill.ok{color:#0B6B49;background:var(--go-soft)}
+  .pill.todo{color:var(--busy);background:#FBD9D9}
   .chk{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-top:1px solid var(--line);cursor:pointer}
   .chk input{margin-top:2px;width:18px;height:18px;accent-color:var(--go);flex:0 0 auto}
-  .chk span{font-size:13px;color:#c5d2e8}
+  .chk span{font-size:13px;color:#3A4453}
   .chk span b{color:var(--ink)}
-  .summary-line{font-size:13px;color:#c5d2e8;padding:10px 0;border-top:1px solid var(--line)}
-  .summary-line.total{font-weight:850;color:var(--ink);border-top:0;padding-top:0;margin-bottom:4px}
+  .prog{margin-left:auto;font-size:11.5px;font-weight:700;color:#0B6B49;background:var(--go-soft);
+    padding:3px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
+  .grp{margin:14px 0 2px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--blue)}
+  .grp:first-child{margin-top:4px}
+  .chk.crit span b{color:var(--busy)}
+  .chk input:checked + span{opacity:.42;text-decoration:line-through}
+  .ck-reset{margin-top:16px;width:100%;border:1px solid var(--line);background:#fff;border-radius:11px;
+    padding:11px;font-family:inherit;font-weight:700;font-size:13px;color:var(--muted);
+    cursor:pointer;min-height:44px}
+  .chk input:checked + span{opacity:.55;text-decoration:line-through}
+  .summary-line{font-size:13px;color:#3A4453;padding:10px 0;border-top:1px solid var(--line)}
+  .summary-line.total{font-weight:700;color:var(--ink);border-top:0;padding-top:0;margin-bottom:4px}
+
+  /* Tank-Tabelle */
+  .tanktab{width:100%;table-layout:fixed;border-collapse:collapse;font-size:12.5px}
+  .tanktab th,.tanktab td{padding:var(--space-2) var(--space-2);text-align:left;vertical-align:top;
+    border-bottom:1px solid var(--line)}
+  .tanktab thead th{background:#F2F5F9;font-weight:700;font-size:11px;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--muted)}
+  .tanktab tbody tr:nth-child(even){background:#FBFCFE}
+  .tanktab td.land{width:44px;font-weight:700}
+  .tanktab td a{color:#12379E;font-weight:700;text-decoration:none}
+  .tanktab .adr{display:block;color:var(--muted);font-weight:400;margin-top:2px}
 
   .foot{margin:18px 4px 0;color:var(--muted);font-size:12px;line-height:1.6;border-top:1px solid var(--line);padding-top:14px}
   .foot b{color:var(--ink)}
@@ -219,20 +276,26 @@
   body.drive .stop:not(.focus) .btns .fuel,
   body.drive .stop:not(.focus) .btns .lnk{display:none}
   body.drive .stop:not(.focus) .card{cursor:pointer}
-  body.drive .stop.focus .card{outline:2px solid rgba(44,198,133,.55);outline-offset:1px}
+  body.drive .stop.focus .card{outline:2px solid var(--go);outline-offset:1px}
   body.drive a.btn,body.drive button.btn{min-height:56px;font-size:15px}
   body.drive .name{font-size:22px}
-  body.drive .ki-panel,body.drive .sections{opacity:.55}
+  body.drive .ki-panel,body.drive .sections{opacity:.6}
 
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none!important;transition:none!important}
-  }
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <p class="eyebrow">İzin Yolu · Live</p>
+  <div class="bar upd" id="updBar">
+    <span>🔄 Neue Version verfügbar</span>
+    <button id="updBtn" type="button">Jetzt aktualisieren</button>
+  </div>
+  <div class="bar off" id="offBar">
+    <span>📴 Offline — Checkliste, Maut &amp; Etappen funktionieren. Kameras &amp; Karten brauchen Netz.</span>
+  </div>
+
+  <p class="eyebrow">İzin Yolu · Pyhrn-Route</p>
   <div class="titlerow">
     <h1>Grenzen-<br>Check</h1>
     <button class="install-btn" id="installBtn" type="button">📲 Installieren</button>
@@ -240,13 +303,14 @@
   <div class="install-hint glass" id="installHint">
     <b>Als App aufs Handy:</b><br>
     <b>iPhone (Safari):</b> Teilen-Symbol → „Zum Home-Bildschirm".<br>
-    <b>Android (Chrome):</b> Menü ⋮ → „App installieren" / „Zum Startbildschirm".<br>
-    Danach läuft die Seite mit eigenem Icon im Vollbild. Die <b>Datei selbst öffnet auch offline</b> – nur die Kameras/Links brauchen Internet.
+    <b>Android (Chrome):</b> Menü ⋮ → „App installieren".<br>
+    Danach läuft die Seite im Vollbild mit eigenem Icon. Die <b>Datei öffnet auch offline</b> – nur Kameras und Links brauchen Internet.
   </div>
 
   <button class="ki-launch" id="kiBtn" type="button">
     <span class="ki-dot"></span> KI: Live-Check meiner Strecke
   </button>
+
   <div class="ki-panel glass solidish" id="kiPanel">
     <h3>KI prüft deine Grenzabschnitte live</h3>
     <p class="sub">Fertiger Prompt für deine aktuelle Richtung. Öffnet eine KI mit Live-Websuche.</p>
@@ -266,7 +330,7 @@
     <button class="tool" id="locBtn" type="button">📍 Nächste Grenze</button>
     <button class="tool" id="driveBtn" type="button">🚗 Fahrmodus</button>
     <span class="tool clock" id="clock">--:--</span>
-    <a class="tool" href="https://www.amss.org.rs/stanje-na-putu/strana/mapa" target="_blank" rel="noopener">⏱️ Wartezeit RS</a>
+    <a class="tool" href="https://m.hak.hr/stanje.asp?id=2" target="_blank" rel="noopener">⏱️ Grenz-Wartezeit</a>
   </div>
 
   <div class="seg glass" id="seg">
@@ -280,139 +344,299 @@
   <div class="rail" id="rail"></div>
 
   <div class="sections">
-    <details class="acc glass solidish">
-      <summary>🚙 Meine Maut-Geräte &amp; Spur <span class="chev">›</span></summary>
-      <div class="body" id="mymautBody"></div>
-    </details>
-    <details class="acc glass solidish">
-      <summary>🎫 Vignetten &amp; Maut <span class="chev">›</span></summary>
+    <details class="acc glass solidish" open>
+      <summary>✅ Meine Maut &amp; Vignetten <span class="chev">›</span></summary>
       <div class="body" id="tollBody"></div>
     </details>
     <details class="acc glass solidish">
-      <summary>📄 Dokumente-Check <span class="chev">›</span></summary>
+      <summary>🚦 Verkehrsdaten (offiziell) <span class="chev">›</span></summary>
+      <div class="body" id="trafficBody"></div>
+    </details>
+    <details class="acc glass solidish">
+      <summary>⛽ Tankstopps (Pyhrn-Route) <span class="chev">›</span></summary>
+      <div class="body" id="fuelBody"></div>
+    </details>
+    <details class="acc glass solidish">
+      <summary>📋 Checkliste vor Abfahrt <span class="prog" id="prog">0 / 0</span><span class="chev">›</span></summary>
       <div class="body" id="docBody"></div>
     </details>
     <details class="acc glass solidish">
       <summary>🛏️ Etappen &amp; Schlaf <span class="chev">›</span></summary>
       <div class="body" id="stageBody"></div>
     </details>
+    <details class="acc glass solidish">
+      <summary>📷 Kamera-Quellen &amp; Apps <span class="chev">›</span></summary>
+      <div class="body" id="camBody"></div>
+    </details>
   </div>
 
   <p class="foot">
-    <b>Status-Punkt:</b> tippe ihn an, um selbst zu markieren, was du siehst/hörst (frei/zäh/Stau) – mit Uhrzeit. <b>Live-Zahlen</b> automatisch in der App bräuchten einen kleinen gehosteten Dienst (Browser sperren das aus einer lokalen Datei); dafür gibt's den AMSS-Link und die KI.
-    Kamera-Quellen offiziell: DARS/promet.si (SLO), HAK (HR), AMSS/MUP (RS), Trakya Gümrük (TR), ASFINAG (AT). Kameras wechseln je nach Fahrtrichtung. Maut-Links offiziell (ASFINAG, DARS, BGToll, PTT/HGS). km/Zeiten &amp; Umwege sind grobe Richtwerte – vor Abfahrt prüfen.
+    <b>Status-Punkt:</b> antippen, um selbst zu markieren, was du siehst (frei/zäh/Stau) – mit Uhrzeit.
+    <b>📍 Bis hierhin:</b> öffnet Google Maps von eurem Start bis zu genau dieser Grenze.
+    <b>🗺️ Ganze Route:</b> öffnet die komplette Strecke bis Silivri/Fürth mit der gewählten Grenze eingeplant.
+    <b>Route:</b> A9 Pyhrn (Bosruck + Gleinalm) → Spielfeld → Maribor → Gruškovje → Zagreb → Bajakovo → Belgrad → Kalotina → Sofia → Kapıkule.
+    <b>Live-Wartezeiten:</b> HAK (HR), AMSS (RS), nakordoni.eu (HR⇄RS &amp; BG⇄TR), BorderAlarm (BG). Maut offiziell (ASFINAG, DARS, BGToll, PTT/HGS).
+    Ziel-Koordinaten für Otman Ufuk sind eine Näherung – Pin vor Abfahrt beim Vermieter bestätigen. km &amp; Zeiten sind Richtwerte.
   </p>
 </div>
 
 <script>
   var MAP=function(q){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);};
+  // Google Maps Routen-Link mit mehreren Wegpunkten.
+  // pts: Array von "lat,lng"-Strings in Fahrreihenfolge (inkl. Start & Ziel).
+  var ROUTE=function(pts){
+    if(pts.length<2) return '';
+    var origin=pts[0], dest=pts[pts.length-1], via=pts.slice(1,-1);
+    var url='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(origin)
+      +'&destination='+encodeURIComponent(dest)+'&travelmode=driving';
+    if(via.length) url+='&waypoints='+via.map(encodeURIComponent).join('%7C');
+    return url;
+  };
+
+  // Feste Koordinaten für Start/Ziel + Kernstädte, damit Maps-Links exakt passen (keine Textsuche)
+  var PT={
+    start:'49.4839,10.9895',        // Fürth, Fronmüllerstraße 139
+    passau:'48.5666,13.4315',
+    kammern:'47.3820,14.7830',      // ASFINAG Raststation Kammern Nord
+    graz:'47.0707,15.4395',
+    spielfeld:'46.6930,15.6420',
+    maribor:'46.5547,15.6459',
+    gruskovje:'46.2230,15.6760',
+    zagreb:'45.8150,15.9819',
+    slavBrod:'45.1603,18.0156',
+    bajakovo:'45.0846,19.1300',
+    tovarnik:'45.1560,19.2280',
+    erdut:'45.5220,19.0130',
+    ilok:'45.2170,19.3760',
+    belgrad:'44.7866,20.4489',
+    nis:'43.3209,21.8958',
+    kalotina:'43.0007,22.7800',
+    vrskaCuka:'43.9760,22.4530',
+    strezimirovci:'42.8000,22.4330',
+    sofia:'42.6977,23.3219',
+    plovdiv:'42.1354,24.7453',
+    harmanli:'41.9333,25.9000',
+    kapikule:'41.7187,26.3530',
+    hamzabeyli:'41.9200,26.6300',
+    derekoy:'41.9900,27.5400',
+    edirne:'41.6771,26.5557',
+    corlu:'41.1600,27.8000',
+    end:'41.0730,28.2470'          // Otman Ufuk Tatil Sitesi, Silivri (Näherung – vor Abfahrt Pin prüfen)
+  };
+
+  // Ganze Route je nach gewählter Grenz-Variante zusammenbauen.
+  // Google Maps erlaubt zuverlässig nur ~9 Wegpunkte -> nur die Grenzen + Passau als Anker verwenden,
+  // Google routet den Rest (Graz, Zagreb, Belgrad, Sofia liegen ohnehin direkt auf dem Weg).
+  function fullRoute(dir, hrChoice, rsbgChoice, bgtrChoice){
+    var hr   = {main:PT.bajakovo, tovarnik:PT.tovarnik, erdut:PT.erdut, ilok:PT.ilok}[hrChoice] || PT.bajakovo;
+    var rsbg = {main:PT.kalotina, vrska:PT.vrskaCuka, strezimirovci:PT.strezimirovci}[rsbgChoice] || PT.kalotina;
+    var trx  = {main:PT.kapikule, hamzabeyli:PT.hamzabeyli, derekoy:PT.derekoy}[bgtrChoice] || PT.kapikule;
+    var pts=[PT.start, PT.passau, PT.spielfeld, PT.gruskovje, hr, PT.nis, rsbg, PT.harmanli, trx, PT.end];
+    if(dir==='ret') pts=pts.slice().reverse();
+    return ROUTE(pts);
+  }
 
   var borders=[
     {from:'AT',to:'SI',klass:'muted',badge:'Schengen',badgeClass:'go',
-     name:'Karawankentunnel',coords:'46.4393,14.0755',lat:46.4393,lng:14.0755,
-     camOut:'https://kamere.dars.si/kamere/hrusica/CP_Hrusica_IPCAM.jpg',
-     camRet:'https://kamere.dars.si/kamere/hrusica/CP_Hrusica_IPCAM.jpg',
-     desc:'Meist <b>kein Stau</b> – aber <b>Tunnelmaut</b> (extra, nicht in Vignette). Vignetten AT/SI nötig.',
-     fuel:'Villach',fuelTip:'In AT/SI tanken',
-     spurOut:'🇦🇹 Streckenmaut Flex: linke grüne Spur, nicht anhalten.',
-     spurRet:'🇸🇮 Karawanken Nord: DARS an Mautstelle Hrušica zahlen – Flex gilt hier NICHT.',
-     links:[],
-     alts:[{an:'Loiblpass (Ljubelj)',km:'+~15 km',note:'mautfreier Pass, langsamer',coords:'46.4470,14.2640'}]},
+     name:'Spielfeld / Šentilj',coords:'46.6930,15.6420',lat:46.6930,lng:15.6420,
+     cam:'https://www.asfinag.at/verkehr-sicherheit/verkehrskameras/',camLabel:'ASFINAG-Kameras A9',
+     camRet:'https://www.promet.si/en/',camRetLabel:'promet.si · Kameras SI',
+     desc:'Ende der <b>A9 Pyhrn</b>. Schengen – meist freie Durchfahrt.',
+     descOut:' <b>Davor 2× Mautstelle:</b> Bosruck + Gleinalm. Mit <b>FLEX</b> ✓ einfach durch die <b>grüne Spur</b> – kein Anhalten, wird später abgebucht.',
+     descRet:' <b>Rückfahrt:</b> Dieselben zwei Mautstellen – FLEX deckt sie automatisch ab. <b>Aber:</b> Vignette prüfen, wenn ihr &gt;10 Tage weg wart.',
+     fuel:'Avanti Spielfeld',fuelTip:'letzte AT-Station',
+     links:[{l:'ASFINAG Verkehrslage',u:'https://www.asfinag.at/verkehr-sicherheit/verkehrslage/'}],
+     alts:[]},
 
-    {from:'SI',to:'HR',klass:'muted',badge:'Schengen',badgeClass:'go',
-     name:'Obrežje / Bregana',coords:'45.8470,15.7000',lat:45.8470,lng:15.7000,
-     camOut:'https://m.hak.hr/kamera.asp?g=2&k=3',
-     camRet:'https://m.hak.hr/kamera.asp?g=2&k=3',
-     desc:'Schengen-Binnengrenze – meist freie Fahrt, gelegentlich <b>Stichproben</b>.',
-     fuel:'Novo Mesto',fuelTip:'optional vor HR',
-     links:[],
-     alts:[{an:'Gruškovje / Macelj',km:'+~25 km',note:'Parallele über Maribor',coords:'46.2230,15.6760',
-            cam:'https://alltrafficcams.com/de/live/grenzubergang/kroatien/slowenien/macelj-gruskovje/'}]},
+    {from:'SI',to:'HR',klass:'muted',badge:'Schengen · ENC',badgeClass:'go',
+     name:'Gruškovje / Macelj',coords:'46.2230,15.6760',lat:46.2230,lng:15.6760,
+     cam:'https://m.hak.hr/kamera.asp?g=2',camLabel:'HAK-Kamera Macelj',
+     camRet:'https://m.hak.hr/kamera.asp?g=2',camRetLabel:'HAK-Kamera Macelj',
+     desc:'Schengen – meist kein Halt, in der Hochsaison zäh.',
+     descOut:' <b>Mit Mautbox:</b> hier <u>kein Ticket ziehen</u> – <b>ENC-Spur</b> nehmen, Schranke öffnet automatisch. Nur <b>eine</b> Box aktiv im Auto!',
+     descRet:' <b>Rückfahrt:</b> ENC-Spur bei der Ausfahrt Macelj – Maut wird automatisch abgebucht.',
+     fuel:'Petrol Maribor AC Vzhod',fuelTip:'in SI tanken',
+     links:[{l:'HAK Grenz-Wartezeit',u:'https://m.hak.hr/stanje.asp?id=2'}],
+     alts:[{an:'Dobovec / Sveti Rok',km:'+~25 km',note:'kleiner Übergang westlich',coords:'46.1550,15.5350'}]},
 
-    {from:'HR',to:'RS',klass:'key',badge:'Kontrolle',badgeClass:'key',
+    {from:'HR',to:'RS',klass:'key',badge:'Kontrolle',badgeClass:'key',slot:'hr',choice:'main',
      name:'Bajakovo / Batrovci',coords:'45.0846,19.1300',lat:45.0846,lng:19.1300,
-     camOut:'https://m.hak.hr/kamera.asp?g=2&k=1',
-     camRet:'https://kamere.amss.org.rs/',
-     desc:'Erste <b>EU-Außengrenze</b> mit Pass- &amp; Zollkontrolle. Im Sommer Wartezeit möglich – Dokumente griffbereit.',
-     fuel:'Lipovac',fuelTip:'in HR vor RS',
-     links:[{l:'Wartezeit (AMSS)',u:'https://www.amss.org.rs/stanje-na-putu/strana/mapa'}],
+     cam:'https://alltrafficcams.com/de/live/grenzubergang/serbien/kroatien/batrovci-bajakovo/',
+     camLabel:'Kamera Bajakovo (Ausreise EU)',
+     camRet:'https://m.hak.hr/stanje.asp?id=2',camRetLabel:'HAK Live-Wartezeit (alle HR-Grenzen)',
+     desc:'Größter Übergang HR ↔ RS. Pass + Fahrzeugschein + <b>Vollmacht</b> + Grüne Karte griffbereit. <b>Hier entstehen die längsten Wartezeiten der ganzen Route</b> – vorher immer die Live-Zeit prüfen.',
+     descOut:' <b>Hinfahrt:</b> Ausreise aus der EU – meist zügiger. Danach in RS: <b>ENP-Spur</b> nehmen (TAG), kein Ticket.',
+     descRet:' ⚠️ <b>Rückfahrt = Einreise in die EU/Schengen.</b> Vollkontrolle beider Seiten – meist der <b>längste Halt der Rückreise</b>. Erst HAK-Zeit checken, dann entscheiden.',
+     fuel:'INA Slavonski Brod',fuelTip:'in HR volltanken vor RS',
+     links:[{l:'AMSS Wartezeit (RS-Seite)',u:'https://www.amss.org.rs/stanje-na-putu/strana/mapa'},
+            {l:'HAK Live-Wartezeit (HR-Seite)',u:'https://m.hak.hr/stanje.asp?id=2'}],
      alts:[
-       {an:'Šid / Tovarnik',km:'+~15 km',note:'parallel, oft etwas leerer',coords:'45.1250,19.2200'},
-       {an:'Bogojevo / Erdut',km:'+~70 km',note:'nördlich – bei Großstau',coords:'45.5200,19.0800'}
+       {an:'⭐ Tovarnik / Šid',km:'+~15 km',note:'liegt an eurer Route (Autoput) – kaum Umweg, meist deutlich leerer als Bajakovo',coords:'45.1250,19.2200',choice:'tovarnik',
+        cam:'https://m.hak.hr/stanje.asp?id=2',rec:true},
+       {an:'Erdut / Bogojevo',km:'+~70 km',note:'nördlich, größerer Umweg – nur wenn Tovarnik auch voll ist',coords:'45.5200,19.0800',choice:'erdut',
+        cam:'https://m.hak.hr/stanje.asp?id=2'},
+       {an:'Ilok / Bačka Palanka',km:'+~75 km',note:'ganz im Norden – meist am leersten, aber weitester Umweg',coords:'45.2170,19.3760',choice:'ilok',
+        cam:'https://alltrafficcams.com/live/border-crossings/serbia/croatia/backa-palanka-ilok/'}
      ]},
 
-    {from:'RS',to:'BG',klass:'key',badge:'Kontrolle',badgeClass:'key',
+    {from:'RS',to:'BG',klass:'key',badge:'Schengen-Außengrenze',badgeClass:'key',slot:'rsbg',choice:'main',
      name:'Gradina / Kalotina',coords:'43.0007,22.7800',lat:43.0007,lng:22.7800,
-     camOut:'https://kamere.amss.org.rs/',
-     camRet:'https://kamere.amss.org.rs/',
-     desc:'Übergang Serbien ↔ Bulgarien. <b>AMSS</b> zeigt die Live-Wartezeit der serbischen Seite.',
-     fuel:'Pirot',fuelTip:'in RS tanken (oft günstig)',
-     links:[{l:'Wartezeit (AMSS)',u:'https://www.amss.org.rs/stanje-na-putu/strana/mapa'}],
-     alts:[{an:'Vrška Čuka / Kula',km:'+~80 km',note:'ruhiger, kleiner Übergang',coords:'43.9000,22.4500'}]},
-
-    {from:'BG',to:'TR',klass:'hot',badge:'Hauptkontrolle',badgeClass:'hot',
-     name:'Kapıkule / Kapitan Andreevo',coords:'41.7187,26.3530',lat:41.7187,lng:26.3530,
-     camOut:'https://trakya.iscoz.com/kapikule/yolcugiris.jpg',
-     camRet:'https://trakya.iscoz.com/kapikule/yolcucikis1.jpg',
-     desc:'Der <b>vollste</b> Übergang. Vor der Grenze volltanken (Harmanli).',
-     descOut:' <b>Hinfahrt:</b> HGS am Grenzübergang/PTT besorgen.',
-     fuel:'Harmanli',fuelTip:'in BG volltanken vor TR',
-     links:[{l:'Live (Community)',u:'https://siladayiz.de/'}],
+     cam:'https://alltrafficcams.com/de/live/grenzubergang/serbien/bulgarien/gradina-grenze-kalotina/',
+     camLabel:'Kamera Gradina/Kalotina',
+     camRet:'https://borderalarm.com/de/countries/bulgaria/',camRetLabel:'BorderAlarm BG – alle Übergänge live',
+     desc:'Bulgarien ist seit 2025 <b>voll im Schengen-Raum</b> – hier wird also EU-Außengrenze kontrolliert. Der Hauptübergang auf der Autobahn – dadurch auch am meisten überlastet.',
+     descOut:' <b>Hinfahrt:</b> Einreise nach BG = Schengen-Einreise. Dinar vorher verbrauchen. Danach BG-E-Vignette gilt automatisch (Kamera).',
+     descRet:' <b>Rückfahrt:</b> Ausreise aus Schengen nach RS – meist schnell. In RS gleich <b>ENP-Spur</b>.',
+     fuel:'OMV Niš',fuelTip:'in RS tanken (günstig)',
+     links:[{l:'AMSS Wartezeit',u:'https://www.amss.org.rs/stanje-na-putu/strana/mapa'},
+            {l:'BorderAlarm BG live',u:'https://borderalarm.com/de/countries/bulgaria/'}],
      alts:[
-       {an:'Hamzabeyli / Lesovo',km:'+~40 km',note:'oft viel leerer',coords:'41.9200,26.6300',
-        cam:'https://uzivokamere.com/de/grenzuebergang-hamzabeyli-lesovo-tuerkei-bulgarien/'},
-       {an:'Dereköy / Malko Tarnovo',km:'+~100 km',note:'sehr leer, bergig',coords:'41.9900,27.5400',
+       {an:'⭐ Vrška Čuka / Vrashka Chuka',km:'+~80 km',note:'kleine Nebenstraße, aber meist nur Minuten Wartezeit – bei Kalotina-Stau klar lohnend',coords:'43.9000,22.4500',choice:'vrska',
+        cam:'https://borderalarm.com/de/countries/bulgaria/',rec:true},
+       {an:'Strezimirovci',km:'+~55 km',note:'sehr schmale Bergstraße über Surdulica (830 m) – nachts mit Kindern eher ungeeignet',coords:'42.8000,22.4330',choice:'strezimirovci',
+        cam:'https://borderalarm.com/de/countries/bulgaria/'}
+     ]},
+
+    {from:'BG',to:'TR',klass:'hot',badge:'Hauptkontrolle',badgeClass:'hot',slot:'bgtr',choice:'main',
+     name:'Kapıkule / Kapitan Andreevo',coords:'41.7187,26.3530',lat:41.7187,lng:26.3530,
+     cam:'https://alltrafficcams.com/de/live/grenzubergang/turkei/bulgarien/kapikule-kapitan-andreewo/',
+     camLabel:'Kamera Kapıkule (Ausreise EU)',
+     camRet:'https://nakordoni.eu/de/country/turkey',camRetLabel:'Live-Wartezeit alle TR-Grenzen (15-Min-Takt)',
+     desc:'Der größte Grenzübergang der Route und einer der meistfrequentierten weltweit. Vorher volltanken (Harmanli).',
+     descOut:' <b>Hinfahrt:</b> HGS ist schon gekauft &amp; aufgeladen ✓ – <b>grüne HGS-Spur</b> nehmen, nie die Kassenspur. Guthaben vorher in der App prüfen.',
+     descRet:' ⚠️ <b>Rückfahrt:</b> <b>HGS-Schulden müssen bezahlt sein</b>, sonst keine Ausreise aus der Türkei. Danach Einreise nach BG = <b>Schengen-Einreise</b> mit voller Kontrolle. Zweiter großer Zeitfresser – erst Wartezeit checken.',
+     fuel:'Lukoil Harmanli',fuelTip:'in BG volltanken vor TR',
+     links:[{l:'Live (Siladayız)',u:'https://siladayiz.de/'},
+            {l:'HGS-Guthaben prüfen',u:'https://hgsmusteri.ptt.gov.tr/'},
+            {l:'Live-Wartezeit (nakordoni)',u:'https://nakordoni.eu/de/country/turkey'}],
+     alts:[
+       {an:'⭐ Hamzabeyli / Lesovo',km:'+~40 km',note:'die Standard-Ausweichroute für Reisende aus DE/AT – gute Straße (D535), meist deutlich leerer',coords:'41.9200,26.6300',choice:'hamzabeyli',
+        cam:'https://uzivokamere.com/de/grenzuebergang-hamzabeyli-lesovo-tuerkei-bulgarien/',rec:true},
+       {an:'Dereköy / Malko Tarnovo',km:'+~100 km',note:'sehr leer, aber bergig und langsam – nur bei Komplettstau an beiden anderen',coords:'41.9900,27.5400',choice:'derekoy',
         cam:'https://uzivokamere.com/de/granicni-prelaz-derekoy-malo-tarnovo-tuerkei-bulgarien/'}
      ]}
   ];
 
-  // Etappen (Hinfahrt): 6 Abschnitte vor/zwischen/nach den 5 Grenzen
+  // Etappen Hinfahrt: 6 Abschnitte (vor/zwischen/nach den 5 Grenzen) – Pyhrn-Route
   var legsOut=[
-    {cities:['München','Salzburg','Tauern','Villach'],km:510,h:'5 h'},
-    {cities:['Ljubljana'],km:150,h:'1,5 h'},
-    {cities:['Zagreb','Slavonski Brod'],km:300,h:'3 h',sleep:'Zagreb / Slavonski Brod'},
-    {cities:['Belgrad','Niš'],km:400,h:'4 h',sleep:'Belgrad od. Niš (gute Halbzeit ~24 h)'},
-    {cities:['Sofia','Plovdiv','Harmanli'],km:320,h:'3,5 h'},
-    {cities:['Edirne','Çorlu'],km:250,h:'3 h'}
+    {cities:['Regensburg','Passau','Linz','Pyhrn (Bosruck+Gleinalm)','Graz'],km:585,h:'5,5 h',
+     fuel:'Aral Rasthof Passau (A3) · ASFINAG Kammern Nord · OMV A9 km 164'},
+    {cities:['Maribor','Ptuj'],km:85,h:'1 h',fuel:'Petrol Maribor AC Vzhod'},
+    {cities:['Zagreb','Slavonski Brod'],km:305,h:'3 h',fuel:'INA Slavonski Brod (letzte vor RS)',
+     sleep:'Zagreb / Slavonski Brod'},
+    {cities:['Belgrad','Niš'],km:465,h:'4,5 h',fuel:'Gazprom Zmaj Belgrad · OMV Niš',
+     sleep:'Belgrad od. Niš (gute Halbzeit)'},
+    {cities:['Sofia','Plovdiv','Harmanli'],km:345,h:'3,5 h',fuel:'OMV Sofia · Lukoil Harmanli (letzte vor TR)'},
+    {cities:['Edirne','Çorlu'],km:215,h:'2,5 h',fuel:'Shell Edirne (HGS!) · Shell Çorlu'}
   ];
 
-  // Maut/Vignetten pro Land (offizielle Links)
+  var fuelStops=[
+    ['DE','Aral Rasthof Passau','Reichsgrafenstraße 35/A3, 94036 Passau · 24 h'],
+    ['AT','ASFINAG Raststation Kammern Nord','A9 Pyhrn, km 121, 8773 Kammern im Liesingtal · 24 h'],
+    ['AT','OMV A9 Pyhrn km 164','Autobahn A9, 8121 · nach dem Gleinalmtunnel · 24 h'],
+    ['AT','Avanti Spielfeld','Oberst-Perleß-Straße 9, 8471 Spielfeld · letzte vor SI, kein WC'],
+    ['SI','Petrol Maribor AC Vzhod','Na Polju, 2000 Maribor · 24 h · WC kostet'],
+    ['HR','INA Slavonski Brod','Ul. Petra Svačića 4, 35000 Slavonski Brod · 24 h · letzte vor RS'],
+    ['RS','Gazprom Petrol Zmaj 1','Autoput BG–ZG, 11000 Beograd · Bargeld dabei!'],
+    ['RS','OMV Niš','Bulevar 12. februara, 18000 Niš · sauberste WC'],
+    ['BG','OMV Sofia','bul. Bulgaria 49V, 1404 Sofia'],
+    ['BG','Lukoil B107 Harmanli','E80, 6450 Harmanli · letzte vor TR – VOLLTANKEN'],
+    ['TR','Shell Edirne – Kapıkule Yolu','Edirne-Kapıkule Yolu E-5, 22130 Edirne · HGS hier kaufen!'],
+    ['TR','Shell / Opet Çorlu','Salih Omurtak Cd. 177, 59860 Çorlu'],
+    ['TR','Shell Silivri','Cumhuriyet, Gür Sk., 34570 Silivri · Kinder-WC']
+  ];
+
   var toll=[
-    {flag:'🇦🇹',c:'Österreich',t:'<b>Digitale Vignette</b> (Pkw). Für die Reise <b>10-Tage</b> nehmen – sofort gültig (Jahres/2-Monat online erst ab Tag 18). <b>Karawanken-Tunnel = extra Streckenmaut.</b>',u:'https://shop.asfinag.at/'},
-    {flag:'🇸🇮',c:'Slowenien',t:'<b>E-Vinjeta</b> (z. B. 7-Tage), sofort gültig, ans Kennzeichen gebunden.',u:'https://evinjeta.dars.si/'},
-    {flag:'🇭🇷',c:'Kroatien',t:'<b>Keine Vignette</b> – Maut per Ticket an Mautstationen (Karte/Bargeld).',u:''},
-    {flag:'🇷🇸',c:'Serbien',t:'<b>Keine Vignette</b> – Maut per Ticket auf dem Autoput (Karte/Bargeld).',u:''},
-    {flag:'🇧🇬',c:'Bulgarien',t:'<b>E-Vignette</b> (Wochenende/7-Tage), Kamera-Kontrolle. Vor Auffahrt kaufen.',u:'https://bgtoll.bg/'},
-    {flag:'🇹🇷',c:'Türkei',t:'<b>HGS</b> (Pkw) am Grenzübergang oder PTT – <b>Karte</b> empfohlen. Pflicht für Autobahnen + Istanbul-Brücken. Vor Ausreise Schulden zahlen.',u:'https://hgsmusteri.ptt.gov.tr/'}
+    {flag:'🇦🇹',c:'Österreich · Streckenmaut FLEX',t:'✓ Aktiv. Bosruck, Gleinalm <b>und jede andere AT-Mautstelle</b> werden automatisch erfasst und später von der hinterlegten Karte abgebucht – hin, zurück, Umweg. <b>Grüne Spur</b> fahren, nicht anhalten, <u>nicht</u> die GO-Spur (LKW).',st:'ok',u:'https://shop.asfinag.at/'},
+    {flag:'⚠️',c:'Österreich · Vignette (Rückfahrt prüfen)',t:'10-Tages-Vignette über ADAC gekauft ✓ – <b>FLEX verlängert die Vignette NICHT.</b> Bleibt ihr länger als 10 Tage, braucht die Rückfahrt eine <b>zweite Vignette</b> (10 Tage 12,80 € oder Tagesvignette 9,60 €). Die Tunnel selbst brauchen keine – die A9/A3 drumherum schon.',st:'todo',u:'https://www.adac.de/fahrzeugwelt/maut-vignette/oesterreich/'},
+    {flag:'🇸🇮',c:'Slowenien · E-Vignette 30 Tage',t:'Gekauft über <b>ADAC</b> ✓ Deckt Hin- und Rückfahrt ab. Keine Mautstelle, Kamera-Kontrolle.',st:'ok',u:'https://evinjeta.dars.si/'},
+    {flag:'🇭🇷',c:'Kroatien · Mautbox (vintrica Flow)',t:'✓ <b>ENC-Spur</b> nehmen, <u>kein Ticket ziehen</u>. Langsam an die Schranke, Piepton abwarten. <b>Nur eine Box aktiv!</b>',st:'ok',u:'https://www.vintrica.com/de/tollbox/croatia/'},
+    {flag:'🇷🇸',c:'Serbien · ENPay TAG',t:'✓ Transponder von Putevi Srbije. <b>ENP-Spur</b> nehmen, kein Ticket. Ca. 6 % Rabatt. Guthaben/Karte in der ENPay-App prüfen. <b>Über Toll4All auch für Kroatien freischaltbar</b> – dann vintrica-Box zuhause lassen.',st:'ok',u:'https://enpay.rs/de/'},
+    {flag:'🇧🇬',c:'Bulgarien · E-Vignette',t:'Gekauft über <b>vintrica</b> ✓ Kamera-Kontrolle auf der A1 Trakia, nichts zu tun.',st:'ok',u:'https://bgtoll.bg/'},
+    {flag:'🇹🇷',c:'Türkei · HGS',t:'Über <b>Vignetim</b> geholt und aufgeladen ✓ <b>Grüne HGS-Spur</b>. Vor der Rückfahrt Guthaben prüfen – <b>Schulden = keine Ausreise</b>.',st:'ok',u:'https://hgsmusteri.ptt.gov.tr/'}
   ];
 
-  // Meine gekauften Maut-Geräte + welche Spur
-  var mymaut=[
-    {flag:'🇷🇸',c:'Serbien · ENpay TAG',g:'TAG an der Windschutzscheibe',s:'<b>ENP-Spur</b> nehmen – nicht anhalten, Schranke öffnet automatisch (~6 % Rabatt). Geschlossenes System: bei <b>Einfahrt und Ausfahrt</b> jeweils die ENP-Spur.'},
-    {flag:'🇭🇷',c:'Kroatien · ENC-Box',g:'ENC-Gerät an der Scheibe',s:'<b>ENC-Spur</b> nehmen – durchfahren, Schranke öffnet per Funk. 2026 noch klassische Mautstellen (Free-Flow „Crolibertas" erst ab 03/2027). Ein- und Ausfahrt jeweils ENC-Spur.'},
-    {flag:'🇦🇹',c:'Österreich · Streckenmaut Flex',g:'kennzeichengebunden (keine Box)',s:'<b>Linke, grün markierte Spur</b> (oder jede normale Spur, NICHT die rechte GO-Spur für LKW). Kamera liest Kennzeichen, Schranke öffnet. Deckt <b>Tauern/Katschberg + Karawanken Richtung Süd</b>. ⚠️ Rückfahrt: Karawanken Richtung Nord zahlt <b>DARS</b> an der Mautstelle Hrušica – Flex gilt dort nicht.'},
-    {flag:'🇦🇹',c:'Österreich · 2× 10-Tage-Vignette',g:'Kennzeichen/Kleber',s:'<b>Keine eigene Spur</b> – gilt fürs normale Autobahnnetz. Sondermaut (Tauern, Karawanken) ist damit NICHT bezahlt → dafür deine Flex. Tipp: die 2. Vignette erst kurz vor der Rückfahrt gültig setzen.'}
+  var traffic=[
+    {flag:'🇩🇪',c:'Autobahn App / autobahn.de',t:'Offiziell (Autobahn GmbH): Staus, Baustellen, Webcams auf A3/A93.',u:'https://autobahn.de/'},
+    {flag:'🇦🇹',c:'ASFINAG Verkehrslage + App „Unterwegs"',t:'Offiziell: Stau vor Bosruck-/Gleinalm-Mautstelle und Spielfeld.',u:'https://www.asfinag.at/verkehr-sicherheit/verkehrslage/'},
+    {flag:'🇸🇮',c:'promet.si (DARS)',t:'Offiziell: Šentilj, Maribor, Gruškovje – Kameras + Störungen.',u:'https://www.promet.si/en/'},
+    {flag:'🇭🇷',c:'HAK – Grenz-Status',t:'<b>Beste Quelle für Bajakovo/Tovarnik/Erdut.</b> Offizielle Wartezeiten aller kroatischen Grenzübergänge.',u:'https://m.hak.hr/stanje.asp?id=2'},
+    {flag:'🇭🇷',c:'HAK – Grenzkameras',t:'Live-Bilder Macelj, Bajakovo, Tovarnik, Erdut. Auch als App „Croatia Traffic Info".',u:'https://m.hak.hr/kamera.asp?g=2'},
+    {flag:'🇷🇸',c:'AMSS Serbien',t:'Offiziell: Verkehrslage + Wartezeiten serbische Grenzen (Bajakovo, Kalotina).',u:'https://www.amss.org.rs/stanje-na-putu/strana/mapa'},
+    {flag:'🇷🇸/🇭🇷',c:'nakordoni.eu – HR ⇄ RS',t:'Live-Wartezeit für Bajakovo, Tovarnik, Erdut, Ilok in Echtzeit, beide Richtungen getrennt.',u:'https://nakordoni.eu/de/country/serbia'},
+    {flag:'🇧🇬',c:'BorderAlarm – alle BG-Grenzen',t:'<b>Beste Quelle für Kalotina/Vrška Čuka/Strezimirovci.</b> Live-Minutenwerte je Richtung.',u:'https://borderalarm.com/de/countries/bulgaria/'},
+    {flag:'🇹🇷',c:'nakordoni.eu – BG ⇄ TR',t:'<b>Beste Quelle für Kapıkule/Hamzabeyli/Dereköy.</b> Aktualisiert alle 15 Minuten, je Richtung.',u:'https://nakordoni.eu/de/country/turkey'},
+    {flag:'🇹🇷',c:'Siladayız – Kameras',t:'Community: alle Grenzkameras der Sıla-Yolu-Route, kostenlos.',u:'https://siladayiz.de/kameralar.html'}
+  ];
+
+  var cams=[
+    {flag:'📷',c:'Siladayız – alle Grenzkameras',t:'Kostenlos, werbefrei, alle Übergänge der Sıla-Yolu-Route auf einer Seite.',u:'https://siladayiz.de/kameralar.html'},
+    {flag:'📱',c:'Memleket.App',t:'Live-Bilder aller Grenz-/Zollstellen + Community. Kostenlos mit Limit, Premium ~4,99 €/Monat.',u:'https://memleket.app/'},
+    {flag:'⏱️',c:'AMSS Serbien',t:'Offizielle Wartezeiten an den serbischen Grenzen (Bajakovo, Gradina).',u:'https://www.amss.org.rs/stanje-na-putu/strana/mapa'},
+    {flag:'🇦🇹',c:'ASFINAG Verkehrskameras',t:'A9 Pyhrn von Voralpenkreuz bis Spielfeld – Stau vor den Tunneln sehen.',u:'https://www.asfinag.at/verkehr-sicherheit/verkehrskameras/'},
+    {flag:'🇸🇮',c:'promet.si',t:'Slowenische Verkehrslage + Kameras (Šentilj, Maribor, Gruškovje).',u:'https://www.promet.si/en/'}
   ];
 
   var docs=[
-    ['Reisepass / Perso','gültig für alle (RS &amp; TR: Pass)'],
-    ['Fahrzeugschein (Zulassung)','Original mitführen'],
-    ['Führerschein',''],
-    ['Grüne Karte (Versicherung)','<b>RS &amp; TR dürfen nicht durchgestrichen</b> sein'],
-    ['Vollmacht','wenn das Auto nicht auf dich zugelassen ist'],
-    ['eSIM / Datenroaming','für RS · BG · TR (kein EU-Roaming)'],
-    ['Bargeld','EUR + etwas Landeswährung (TRY); Karten meist ok'],
-    ['Warnweste · Warndreieck · Verbandskasten','+ Ersatzlampen empfohlen']
+    ['g','Jetzt online erledigen'],
+    ['!','2. AT-Vignette für die RÜCKFAHRT kaufen','10 Tage 12,80 € oder Tagesvignette 9,60 € – Kennzeichen exakt eingeben'],
+    ['!','ASFINAG-Konto prüfen','FLEX: Firmen-Kennzeichen korrekt? Zahlungsmittel gültig? Sonst 120 € Ersatzmaut'],
+    ['x','ENPay-TAG: Toll4All für Kroatien freischalten','Dann bleibt die vintrica-Box zuhause – kein Doppel-Tag-Problem'],
+    ['x','HGS-Guthaben prüfen','min. ~30–35 TL · hgsmusteri.ptt.gov.tr'],
+    ['x','Belege sichern','AT-Vignette · SI 30 Tage · BG-Vignette · FLEX · HGS – als PDF aufs Handy'],
+    ['!','Grüne Karte: TR nicht durchgestrichen','Gebietserweiterung beim Firmen-Versicherer anfordern – dauert!'],
+    ['!','Vollmacht der Firma','unterschrieben + gestempelt, DE/EN/TR, Original mitführen'],
+    ['x','eSIM Serbien + Türkei installieren','kein EU-Roaming dort · Datenroaming aktivieren'],
+    ['x','Offline-Karten laden','AT · SI · HR · RS · BG · TR (v. a. Serbien)'],
+    ['x','Apps aufs Handy','HAK „Croatia Traffic Info" · ASFINAG Unterwegs · AMSS · ENPay · PTT/HGS'],
+    ['x','Unterkunft: Koordinaten vom Vermieter','Google-Pin für Otman Ufuk prüfen'],
+
+    ['g','Dokumentenmappe (griffbereit, nicht im Kofferraum)'],
+    ['!','Reisepässe – alle, auch die Kinder',''],
+    ['x','Führerscheine beider Fahrer','Internationaler FS für TR empfohlen'],
+    ['!','Zulassungsbescheinigung Teil I','Original'],
+    ['!','Vollmacht (Original)','wird an RS + TR verlangt'],
+    ['!','Grüne Karte (Papierausdruck)',''],
+    ['x','Buchungsbestätigung Unterkunft',''],
+
+    ['g','Auto & Ausrüstung'],
+    ['!','Nur EINE Mautbox aktiv','zweite Box in Alufolie ins Handschuhfach'],
+    ['!','Warnwesten für ALLE Insassen','auch die Kinder'],
+    ['!','Feuerlöscher','in der Türkei Pflicht – griffbereit, nicht im Kofferraum'],
+    ['!','Verbandskasten · Warndreieck',''],
+    ['x','Ersatzlampen · Abschleppseil · Starthilfekabel',''],
+    ['x','Reifen: Profil + Druck · Reserverad/Pannenset · Wagenheber',''],
+    ['x','Öl-, Kühl-, Wischwasserstand',''],
+    ['x','Handyhalterung · Ladekabel · Powerbank · 12V-Adapter',''],
+    ['x','Kinder: Snacks, Wasser, Beschäftigung, Decke',''],
+
+    ['g','Bargeld'],
+    ['!','Euro bar + Kleingeld','WC kostet 0,50–1 € · Serbien: Karten oft abgelehnt'],
+    ['x','Serbische Dinar','für Tankstellen & Kleinkram'],
+    ['x','Türkische Lira',''],
+    ['x','Kreditkarte(n)',''],
+
+    ['g','Am Abfahrtstag'],
+    ['x','In Deutschland volltanken','vor Passau'],
+    ['x','Wartezeiten checken','HAK (Bajakovo) · AMSS · BorderAlarm (Kapıkule)'],
+    ['x','Fahrerwechsel-Plan','alle 2–3 h · Pause alle 2 h'],
+
+    ['g','Rückfahrt (in der Türkei erledigen)'],
+    ['!','HGS-Schulden auf 0','sonst KEINE Ausreise aus der Türkei'],
+    ['!','2. AT-Vignette aktiv?','Gültigkeit prüfen, bevor ihr Österreich erreicht'],
+    ['x','Dinar aufbrauchen','vor der Ausreise aus Serbien'],
+    ['x','Wartezeiten Kapıkule + Bajakovo','beides Schengen-EINREISE – die längsten Stopps der Rückreise']
   ];
 
   var currentDir='out', focusIndex=-1;
-  var statusState={}; // name -> {i, time}
+  var statusState={};
   var STNAME=['Status setzen','Frei','Zäh','Stau'];
 
   function endpointHTML(ep){return '<div class="endpoint"><span class="node"></span><div class="lbl">'+ep.t+'<small>'+ep.s+'</small></div></div>';}
   function legHTML(L){
     var s='<div class="leg"><span class="ico">&#8627;</span>'+L.cities.join(' · ')
         +' <span class="meta">— ~'+L.km+' km · ~'+L.h+'</span>';
+    if(L.fuel)  s+='<span class="fuel">⛽ '+L.fuel+'</span>';
     if(L.sleep) s+='<span class="sleep">🛏️ Übernachtung: '+L.sleep+'</span>';
     return s+'</div>';
   }
@@ -424,37 +648,58 @@
   }
   function cardHTML(b,dir,idx){
     var from=dir==='out'?b.from:b.to, to=dir==='out'?b.to:b.from;
-    var desc=b.desc+(dir==='out'&&b.descOut?b.descOut:'');
+    var desc=b.desc+(dir==='out'?(b.descOut||''):(b.descRet||''));
+    var cam   = (dir==='out')? b.cam : (b.camRet||b.cam);
+    var camL  = (dir==='out')? (b.camLabel||('Live-Kamera · '+b.name.split(' / ')[0]))
+                             : (b.camRetLabel||b.camLabel||('Live-Kamera · '+b.name.split(' / ')[0]));
     var btns=[];
-    var spur=(dir==='out'?b.spurOut:b.spurRet);
-    var camUrl=(dir==='out'?b.camOut:b.camRet)||b.cam;
-    if(camUrl) btns.push('<a class="btn cam span2" href="'+camUrl+'" target="_blank" rel="noopener">&#128247; Live-Kamera · '+b.name.split(' / ')[0]+' · '+(dir==='out'?'Hin':'Rück')+'</a>');
+    if(cam) btns.push('<a class="btn cam span2" href="'+cam+'" target="_blank" rel="noopener">&#128247; '+camL+'</a>');
     var row=['<a class="btn map" href="'+MAP(b.coords)+'" target="_blank" rel="noopener">Karte &amp; Verkehr</a>'];
-    if(b.fuel) row.push('<a class="btn fuel" href="'+MAP('Tankstelle '+b.fuel)+'" target="_blank" rel="noopener">⛽ '+b.fuelTip+'</a>');
+    if(b.fuel) row.push('<a class="btn fuel" href="'+MAP(b.fuel)+'" target="_blank" rel="noopener">⛽ '+b.fuelTip+'</a>');
     b.links.forEach(function(x){row.push('<a class="btn lnk" href="'+x.u+'" target="_blank" rel="noopener">'+x.l+'</a>');});
     if(row.length%2===1) row[row.length-1]=row[row.length-1].replace('class="btn ','class="btn span2 ');
     btns=btns.concat(row);
 
+    // ---- Google-Maps-Routen: "Bis hierhin" + "Ganze Route (Hauptübergang)" ----
+    var routeBtns='';
+    if(b.slot){
+      var toHere = (dir==='out') ? ROUTE([PT.start,b.coords]) : ROUTE([PT.end,b.coords]);
+      var fullMain = fullRoute(dir);
+      routeBtns='<div class="btns" style="margin-top:8px">'
+        +'<a class="btn gmap span2" href="'+toHere+'" target="_blank" rel="noopener">📍 Nur bis hierhin (Google Maps)</a>'
+        +'<a class="btn gmap2 span2" href="'+fullMain+'" target="_blank" rel="noopener">🗺️ Ganze Route – Hauptübergänge (Google Maps)</a>'
+        +'</div>';
+    }
+
     var alts='';
     if(b.alts&&b.alts.length){
-      alts='<div class="alts"><h4>Nachbar-Grenze · Umweg</h4>';
-      b.alts.forEach(function(a){
+      var list=b.alts.slice().sort(function(x,y){return (y.rec?1:0)-(x.rec?1:0);});
+      alts='<div class="alts"><h4>Ausweich-Grenzen bei Stau</h4>';
+      list.forEach(function(a){
         var links='<a class="amap" href="'+MAP(a.coords)+'" target="_blank" rel="noopener">Karte</a>';
-        if(a.cam) links='<a class="acam" href="'+a.cam+'" target="_blank" rel="noopener">&#128247; Kamera</a>'+links;
-        alts+='<div class="alt"><span class="an">'+a.an+'</span><span class="km">'+a.km+'</span><span class="note">'+a.note+'</span><span class="alinks">'+links+'</span></div>';
+        if(a.cam) links='<a class="acam" href="'+a.cam+'" target="_blank" rel="noopener">&#9201; Wartezeit</a>'+links;
+        var recTag=a.rec?'<span class="rectag">Empfehlung</span>':'';
+        alts+='<div class="alt'+(a.rec?' isrec':'')+'">'+recTag+'<span class="an">'+a.an+'</span><span class="km">'+a.km+'</span><span class="note">'+a.note+'</span><span class="alinks">'+links+'</span></div>';
+        if(b.slot && a.choice){
+          var toAlt = (dir==='out') ? ROUTE([PT.start,a.coords]) : ROUTE([PT.end,a.coords]);
+          var fullAlt = fullRoute(dir, b.slot==='hr'?a.choice:undefined, b.slot==='rsbg'?a.choice:undefined, b.slot==='bgtr'?a.choice:undefined);
+          alts+='<div class="altroutes">'
+            +'<a class="btn gmap" href="'+toAlt+'" target="_blank" rel="noopener">📍 Bis '+a.an.replace('⭐ ','')+'</a>'
+            +'<a class="btn gmap2" href="'+fullAlt+'" target="_blank" rel="noopener">🗺️ Ganze Route über '+a.an.replace('⭐ ','').split(' / ')[0]+'</a>'
+            +'</div>';
+        }
       });
       alts+='</div>';
     }
     var focus=(idx===focusIndex)?' focus':'';
-    return '<div class="stop'+focus+'" data-idx="'+idx+'"><span class="node"></span><div class="card glass solidish '+(b.klass==='muted'?'muted':'')+'">'
+    return '<div class="stop'+focus+'" data-idx="'+idx+'"><span class="node"></span><div class="card glass solidish">'
       +'<div class="crumbs"><span class="cc">'+from+'</span><span class="arrow">&#8594;</span><span class="cc">'+to+'</span><span class="badge '+b.badgeClass+'">'+b.badge+'</span></div>'
       +'<p class="name">'+b.name+'</p><p class="desc">'+desc+'</p>'
-      +(spur?'<p class="desc" style="color:var(--go);font-weight:750;margin-top:-4px">'+spur+'</p>':'')
       +statusHTML(b)
-      +'<div class="btns">'+btns.join('')+'</div>'+alts+'</div></div>';
+      +'<div class="btns">'+btns.join('')+'</div>'+routeBtns+alts+'</div></div>';
   }
 
-  var EP={out:{start:{t:'Fürth',s:'90763 · Start'},end:{t:'Silivri',s:'Otman Ufuk · Ziel'}},
+  var EP={out:{start:{t:'Fürth',s:'90763 · Start ca. 02:30'},end:{t:'Silivri',s:'Otman Ufuk · Ziel'}},
           ret:{start:{t:'Silivri',s:'Otman Ufuk · Start'},end:{t:'Fürth',s:'90763 · Ziel'}}};
 
   function render(dir){
@@ -468,32 +713,49 @@
     updatePrompt(); renderStages(legs);
   }
 
-  // ---------- Akkordeon-Inhalte ----------
-  function renderToll(){
+  function renderRows(list,target){
     var h='';
-    toll.forEach(function(x){
-      var act=x.u?('<a class="go" href="'+x.u+'" target="_blank" rel="noopener">Kaufen</a>'):'<span class="none">vor Ort</span>';
-      h+='<div class="row2"><span class="flag">'+x.flag+'</span><span class="txt"><b>'+x.c+'</b><br>'+x.t+'</span>'+act+'</div>';
+    list.forEach(function(x){
+      var act=x.u?('<a class="go'+(x.st==='todo'?' warn':'')+'" href="'+x.u+'" target="_blank" rel="noopener">'+(x.st==='todo'?'Kaufen':'Öffnen')+'</a>'):'<span class="none">vor Ort</span>';
+      var pill=x.st?('<span class="pill '+x.st+'">'+(x.st==='ok'?'erledigt':'offen')+'</span>'):'';
+      h+='<div class="row2'+(x.st==='todo'?' todo':'')+'"><span class="flag">'+x.flag+'</span><span class="txt"><b>'+x.c+'</b> '+pill+'<br>'+x.t+'</span>'+act+'</div>';
     });
-    document.getElementById('tollBody').innerHTML=h;
+    document.getElementById(target).innerHTML=h;
   }
-  function renderMymaut(){
-    var h='';
-    mymaut.forEach(function(x){
-      h+='<div class="row2"><span class="flag">'+x.flag+'</span><span class="txt"><b>'+x.c+'</b><br><span style="color:var(--muted);font-size:11.5px">'+x.g+'</span><br><span style="color:var(--go);font-weight:700">➜ '+x.s+'</span></span></div>';
+  function renderFuel(){
+    var h='<table class="tanktab"><thead><tr><th>Land</th><th>Station · Adresse</th></tr></thead><tbody>';
+    fuelStops.forEach(function(f){
+      h+='<tr><td class="land">'+f[0]+'</td><td><a href="'+MAP(f[1]+' '+f[2].split(' · ')[0])+'" target="_blank" rel="noopener">'+f[1]+'</a><span class="adr">'+f[2]+'</span></td></tr>';
     });
-    document.getElementById('mymautBody').innerHTML=h;
+    document.getElementById('fuelBody').innerHTML=h+'</tbody></table>';
   }
+  var docTotal=0, ckState={};
+  function ckLoad(){try{var r=localStorage.getItem('sy_check');if(r)ckState=JSON.parse(r)||{};}catch(e){ckState={};}}
+  function ckSave(){try{localStorage.setItem('sy_check',JSON.stringify(ckState));}catch(e){}}
   function renderDocs(){
-    var h='';
+    var h=''; docTotal=0;
     docs.forEach(function(d,i){
-      h+='<label class="chk"><input type="checkbox" data-doc="'+i+'"><span><b>'+d[0]+'</b>'+(d[1]?(' — '+d[1]):'')+'</span></label>';
+      if(d[0]==='g'){h+='<p class="grp">'+d[1]+'</p>';return;}
+      docTotal++;
+      var crit=(d[0]==='!')?' crit':'';
+      var on=ckState['i'+i]?' checked':'';
+      h+='<label class="chk'+crit+'"><input type="checkbox" data-doc="'+i+'"'+on+'><span><b>'+(d[0]==='!'?'⚠️ ':'')+d[1]+'</b>'+(d[2]?('<br>'+d[2]):'')+'</span></label>';
     });
+    h+='<button class="ck-reset" id="ckReset" type="button">Alle Haken zurücksetzen</button>';
     document.getElementById('docBody').innerHTML=h;
+    document.getElementById('ckReset').addEventListener('click',function(){
+      if(!confirm('Alle Haken zurücksetzen?'))return;
+      ckState={}; ckSave(); renderDocs();
+    });
+    updateProg();
+  }
+  function updateProg(){
+    var done=document.querySelectorAll('#docBody input:checked').length;
+    document.getElementById('prog').textContent=done+' / '+docTotal;
   }
   function renderStages(legs){
     var totKm=0; legsOut.forEach(function(L){totKm+=L.km;});
-    var h='<div class="summary-line total">Gesamt: ~'+totKm.toLocaleString('de-DE')+' km · ~20 h reine Fahrt (ohne Pausen/Grenzwartezeit)</div>';
+    var h='<div class="summary-line total">Gesamt: ~'+totKm.toLocaleString('de-DE')+' km · ~21 h reine Fahrt (ohne Pausen/Grenzwartezeit)</div>';
     var bs=borders.slice(); if(currentDir==='ret') bs.reverse();
     for(var i=0;i<legs.length;i++){
       var to=(i<bs.length)?bs[i].name.split(' / ')[0]:(currentDir==='out'?'Silivri':'Fürth');
@@ -502,13 +764,16 @@
     document.getElementById('stageBody').innerHTML=h;
   }
 
-  // ---------- KI ----------
   function buildPrompt(dir){
     var route=dir==='out'?'Fürth (Deutschland) → Silivri (Türkei)':'Silivri (Türkei) → Fürth (Deutschland)';
-    return 'Ich fahre heute die Sıla-Yolu-/İzin-Yolu-Route '+route+'. '
-      +'Prüfe bitte LIVE über aktuelle Webquellen (AMSS Serbien, siladayiz.de, lokale Verkehrs-/Stau-Meldungen, Community-Berichte) die aktuelle Wartezeit und Verkehrslage in Fahrtrichtung an diesen Grenzübergängen und nenne mir pro Abschnitt die beste Option:\n'
-      +'1) Karawankentunnel (AT–SI)\n2) Obrežje/Bregana (SI–HR)\n3) Bajakovo/Batrovci (HR–RS) — Alt.: Šid/Tovarnik\n4) Gradina/Kalotina (RS–BG)\n5) Kapıkule (BG–TR) — Alt.: Hamzabeyli/Lesovo, Dereköy/Malko Tarnovo\n\n'
-      +'Gib mir konkret: aktuelle PKW-Wartezeit, ob ein Übergang gesperrt/überlastet ist, welche Alternative sich gerade lohnt. Datum/Uhrzeit der Info + Quellen nennen.';
+    var richtung = (dir==='out')
+      ? 'Fahrtrichtung Türkei (Ausreise aus der EU/Schengen an Kapıkule).'
+      : 'Fahrtrichtung Deutschland (EINREISE in die EU/Schengen an Kapitan Andreevo UND an Bajakovo – dort sind die längsten Wartezeiten).';
+    return 'Ich fahre heute die Sıla-Yolu-Route '+route+' über die A9 Pyhrn Autobahn (nicht über den Tauern/Karawanken). '+richtung+' '
+      +'Prüfe bitte LIVE über aktuelle Webquellen (ASFINAG, promet.si, HAK Kroatien m.hak.hr/stanje.asp?id=2, AMSS Serbien, nakordoni.eu, borderalarm.com, siladayiz.de) Verkehrslage und Wartezeit in Fahrtrichtung an diesen Punkten:\n'
+      +'1) A9 Pyhrn: Stau vor Bosruck-/Gleinalmtunnel-Mautstelle?\n2) Spielfeld/Šentilj (AT–SI)\n3) Gruškovje/Macelj (SI–HR)\n4) Bajakovo/Batrovci (HR–RS) — Alt.: Tovarnik/Šid, Erdut/Bogojevo, Ilok/Bačka Palanka\n5) Gradina/Kalotina (RS–BG) — Alt.: Vrška Čuka, Strezimirovci\n6) Kapıkule (BG–TR) — Alt.: Hamzabeyli/Lesovo, Dereköy/Malko Tarnovo\n\n'
+      +'Wichtig: Ich habe Mautbox/TAG für Kroatien (ENC) und Serbien (ENP) sowie HGS für die Türkei – nenne mir also nur Wartezeiten, keine Ticket-Tipps.\n'
+      +'Gib mir pro Punkt: aktuelle PKW-Wartezeit in MEINER Fahrtrichtung in Minuten/Stunden, ob etwas gesperrt/überlastet ist, und AM ENDE eine klare Empfehlung: Hauptübergang fahren oder auf welche Alternative wechseln (mit Umweg-km und geschätzter Zeitersparnis). Datum/Uhrzeit der Info + Quellen nennen.';
   }
   function updatePrompt(){var ta=document.getElementById('kiPrompt');if(ta)ta.value=buildPrompt(currentDir);}
   function openURL(u){window.open(u,'_blank','noopener');}
@@ -518,7 +783,6 @@
     function fb(t,cb){var ta=document.getElementById('kiPrompt');ta.focus();ta.select();try{document.execCommand('copy');cb&&cb(true);}catch(e){cb&&cb(false);}}}
   function flashNote(m){var n=document.getElementById('kiNote'),o=n.innerHTML;n.innerHTML='<span class="copied">'+m+'</span>';setTimeout(function(){n.innerHTML=o;},2600);}
 
-  // ---------- Geolocation ----------
   function hav(a,b,c,d){var R=6371,p=Math.PI/180,x=(c-a)*p,y=(d-b)*p;var u=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*p)*Math.cos(c*p)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(u));}
   function locate(){
     if(!navigator.geolocation){showLoc('Standort nicht verfügbar','');return;}
@@ -535,12 +799,11 @@
   }
   function showLoc(t,km){document.getElementById('locText').textContent=t;document.getElementById('locKm').textContent=km;document.getElementById('locbar').classList.add('show');}
 
-  // ---------- Events ----------
   document.getElementById('kiBtn').addEventListener('click',function(){var p=document.getElementById('kiPanel');p.classList.toggle('open');if(p.classList.contains('open')){updatePrompt();p.scrollIntoView({behavior:'smooth',block:'nearest'});}});
   document.getElementById('kiPerplexity').addEventListener('click',function(){openURL('https://www.perplexity.ai/search?q='+encodeURIComponent(promptText()));});
   document.getElementById('kiGpt').addEventListener('click',function(){openURL('https://chatgpt.com/?q='+encodeURIComponent(promptText()));});
-  document.getElementById('kiGemini').addEventListener('click',function(){copyPrompt(function(ok){openURL('https://gemini.google.com/app');flashNote(ok?'Prompt kopiert – in Gemini einfügen (⌘/Strg+V).':'Bitte Prompt manuell kopieren.');});});
-  document.getElementById('kiClaude').addEventListener('click',function(){copyPrompt(function(ok){openURL('https://claude.ai/new');flashNote(ok?'Prompt kopiert – in Claude einfügen (⌘/Strg+V).':'Bitte Prompt manuell kopieren.');});});
+  document.getElementById('kiGemini').addEventListener('click',function(){copyPrompt(function(ok){openURL('https://gemini.google.com/app');flashNote(ok?'Prompt kopiert – in Gemini einfügen.':'Bitte Prompt manuell kopieren.');});});
+  document.getElementById('kiClaude').addEventListener('click',function(){copyPrompt(function(ok){openURL('https://claude.ai/new');flashNote(ok?'Prompt kopiert – in Claude einfügen.':'Bitte Prompt manuell kopieren.');});});
   document.getElementById('kiCopy').addEventListener('click',function(){copyPrompt(function(ok){flashNote(ok?'Prompt kopiert ✓':'Bitte manuell kopieren.');});});
 
   document.getElementById('locBtn').addEventListener('click',locate);
@@ -557,7 +820,6 @@
   var seg=document.getElementById('seg');
   seg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;[].forEach.call(seg.querySelectorAll('button'),function(x){x.classList.remove('active');});b.classList.add('active');render(b.getAttribute('data-dir'));});
 
-  // Delegierte Klicks im Rail: Status-Punkt + Fahrmodus-Fokus
   document.getElementById('rail').addEventListener('click',function(e){
     var st=e.target.closest('.stbtn');
     if(st){var name=st.getAttribute('data-st');var cur=statusState[name]||{i:0};var ni=(cur.i+1)%4;
@@ -570,26 +832,59 @@
     }
   });
 
-  // Dokumente-Check (in-memory; bleibt während der Sitzung)
   document.getElementById('docBody').addEventListener('change',function(e){
     var cb=e.target.closest('input[type=checkbox]');if(!cb)return;
-    cb.setAttribute(cb.checked?'data-on':'data-off','1');
+    var k='i'+cb.getAttribute('data-doc');
+    if(cb.checked){ckState[k]=1;}else{delete ckState[k];}
+    ckSave(); updateProg();
   });
 
   (function(){function tick(){var d=new Date();document.getElementById('clock').textContent='Jetzt '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});}tick();setInterval(tick,15000);})();
 
-  // ---------- PWA: Manifest + Icon zur Laufzeit ----------
+  // ---------- PWA: Service Worker + Update-Erkennung ----------
   (function(){
-    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="104" fill="#0C1420"/><path d="M150 392 C150 300 360 300 360 200" fill="none" stroke="#2CC685" stroke-width="30" stroke-linecap="round" stroke-dasharray="3 44"/><circle cx="150" cy="392" r="34" fill="#2CC685"/><circle cx="360" cy="128" r="34" fill="#2CC685"/></svg>';
-    var icon='data:image/svg+xml,'+encodeURIComponent(svg);
-    var man={name:'Grenzen-Check · Sıla Yolu',short_name:'Grenzen',start_url:'.',display:'standalone',background_color:'#0C1420',theme_color:'#0C1420',icons:[{src:icon,sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
-    var l=document.createElement('link');l.rel='manifest';l.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(man));document.head.appendChild(l);
-    var a=document.createElement('link');a.rel='apple-touch-icon';a.href=icon;document.head.appendChild(a);
     window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__deferredPrompt=e;});
+
+    if(!('serviceWorker' in navigator)) return;
+    var refreshing=false;
+    navigator.serviceWorker.addEventListener('controllerchange',function(){
+      if(refreshing) return; refreshing=true; window.location.reload();
+    });
+
+    navigator.serviceWorker.register('./sw.js').then(function(reg){
+      // Schon eine neue Version wartend?
+      if(reg.waiting) showUpdate(reg);
+      // Neue Version gefunden?
+      reg.addEventListener('updatefound',function(){
+        var nw=reg.installing; if(!nw) return;
+        nw.addEventListener('statechange',function(){
+          if(nw.state==='installed' && navigator.serviceWorker.controller) showUpdate(reg);
+        });
+      });
+      // Beim Öffnen und alle 30 Min. nach Updates schauen
+      setInterval(function(){reg.update();}, 30*60*1000);
+    }).catch(function(){});
+
+    function showUpdate(reg){
+      var b=document.getElementById('updBar');
+      b.classList.add('show');
+      document.getElementById('updBtn').onclick=function(){
+        if(reg.waiting) reg.waiting.postMessage('skipWaiting');
+      };
+    }
+  })();
+
+  // ---------- Offline-Anzeige ----------
+  (function(){
+    var b=document.getElementById('offBar');
+    function upd(){ b.classList.toggle('show', !navigator.onLine); }
+    window.addEventListener('online',upd);
+    window.addEventListener('offline',upd);
+    upd();
   })();
 
   // Init
-  renderToll(); renderMymaut(); renderDocs(); render('out');
+  ckLoad(); renderFuel(); renderRows(toll,'tollBody'); renderRows(traffic,'trafficBody'); renderRows(cams,'camBody'); renderDocs(); render('out');
 </script>
 </body>
 </html>
