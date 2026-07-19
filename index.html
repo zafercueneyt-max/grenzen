@@ -110,6 +110,12 @@
     font-family:inherit;font-size:13px;line-height:1.5;color:var(--ink);
     background:#fff;border:1px solid var(--line);outline:none}
   .ki-panel textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+  .eta-row{display:flex;align-items:center;gap:9px;margin:0 0 14px}
+  .eta-row input{width:76px;border-radius:10px;padding:10px 11px;font-family:inherit;font-size:15px;
+    font-weight:700;color:var(--ink);background:#fff;border:1px solid var(--line);outline:none;
+    font-variant-numeric:tabular-nums}
+  .eta-row input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+  .eta-row span{color:var(--muted);font-size:13px;font-weight:600}
   .ki-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
   .ki-actions button{font-family:inherit;font-weight:700;font-size:13.5px;border-radius:11px;
     padding:12px 8px;cursor:pointer;min-height:46px;color:var(--ink);
@@ -253,6 +259,10 @@
   .chk input:checked + span{opacity:.55;text-decoration:line-through}
   .summary-line{font-size:13px;color:#3A4453;padding:10px 0;border-top:1px solid var(--line)}
   .summary-line.total{font-weight:700;color:var(--ink);border-top:0;padding-top:0;margin-bottom:4px}
+  .volatility{margin:0 0 12px;padding:11px 12px;border-radius:12px;background:var(--caution-soft);
+    border:1px solid #F3C58A;color:#7A3A05;font-size:12.5px;line-height:1.6}
+  .volatility b{color:#5C2A00}
+  a.btn.legroute{margin:2px 0 12px;font-size:12px;min-height:38px;padding:8px}
 
   /* Tank-Tabelle */
   .tanktab{width:100%;table-layout:fixed;border-collapse:collapse;font-size:12.5px}
@@ -314,6 +324,11 @@
   <div class="ki-panel glass solidish" id="kiPanel">
     <h3>KI prüft deine Grenzabschnitte live</h3>
     <p class="sub">Fertiger Prompt für deine aktuelle Richtung. Öffnet eine KI mit Live-Websuche.</p>
+    <label for="kiEta">In wie vielen Stunden bist du an der nächsten kritischen Grenze?</label>
+    <div class="eta-row">
+      <input type="number" id="kiEta" min="0" max="24" step="0.5" value="2" inputmode="decimal">
+      <span>Std.</span>
+    </div>
     <label for="kiPrompt">Prompt (anpassbar)</label>
     <textarea id="kiPrompt" spellcheck="false"></textarea>
     <div class="ki-actions">
@@ -349,8 +364,11 @@
       <div class="body" id="tollBody"></div>
     </details>
     <details class="acc glass solidish">
-      <summary>🚦 Verkehrsdaten (offiziell) <span class="chev">›</span></summary>
-      <div class="body" id="trafficBody"></div>
+      <summary>🚦 Verkehrsdaten &amp; Wartezeiten <span class="chev">›</span></summary>
+      <div class="body">
+        <p class="volatility">⚠️ <b>Werte schwanken stark und schnell.</b> Beispiel von heute: Bajakovo fiel von 10 Std. (13:30) auf 2 Std. (18:35) – Hamzabeyli stieg im selben Zeitraum von 10 Min. auf 3,5 Std. <b>Immer 2 Quellen gegenchecken</b> und die Fahrzeit bis zur Grenze mit einrechnen, nicht nur den aktuellen Wert.</p>
+        <div id="trafficBody"></div>
+      </div>
     </details>
     <details class="acc glass solidish">
       <summary>⛽ Tankstopps (Pyhrn-Route) <span class="chev">›</span></summary>
@@ -376,7 +394,7 @@
     <b>🗺️ Ganze Route:</b> öffnet die komplette Strecke bis Silivri/Fürth mit der gewählten Grenze eingeplant.
     <b>Route:</b> A9 Pyhrn (Bosruck + Gleinalm) → Spielfeld → Maribor → Gruškovje → Zagreb → Bajakovo → Belgrad → Kalotina → Sofia → Kapıkule.
     <b>Live-Wartezeiten:</b> HAK (HR), AMSS (RS), nakordoni.eu (HR⇄RS &amp; BG⇄TR), BorderAlarm (BG). Maut offiziell (ASFINAG, DARS, BGToll, PTT/HGS).
-    Ziel-Koordinaten für Otman Ufuk sind eine Näherung – Pin vor Abfahrt beim Vermieter bestätigen. km &amp; Zeiten sind Richtwerte.
+    Ziel-Koordinaten für Otman Ufuk sind aus deinem gespeicherten Google-Maps-Link übernommen ✓. km &amp; Zeiten sind Richtwerte.
   </p>
 </div>
 
@@ -395,33 +413,33 @@
 
   // Feste Koordinaten für Start/Ziel + Kernstädte, damit Maps-Links exakt passen (keine Textsuche)
   var PT={
-    start:'49.4839,10.9895',        // Fürth, Fronmüllerstraße 139
+    start:'49.4598,11.0054',        // Fürth, Fronmüllerstraße 139 – exakt aus deinem Maps-Link
     passau:'48.5666,13.4315',
-    kammern:'47.3820,14.7830',      // ASFINAG Raststation Kammern Nord
+    kammern:'47.3869,14.8985',      // ASFINAG Raststation Kammern Nord – exakt aus deinem Maps-Link
     graz:'47.0707,15.4395',
-    spielfeld:'46.6930,15.6420',
+    spielfeld:'46.7319,15.6410',    // exakt aus deinem Maps-Link (Parkplatz Straß West → Spielfeld)
     maribor:'46.5547,15.6459',
     gruskovje:'46.2230,15.6760',
-    zagreb:'45.8150,15.9819',
-    slavBrod:'45.1603,18.0156',
+    zagreb:'45.7499,16.3021',       // exakt aus deinem Maps-Link (Resting Ježevo)
+    slavBrod:'45.1080,18.5235',     // exakt aus deinem Maps-Link (Rest stop Sava South, Babina Greda)
     bajakovo:'45.0846,19.1300',
     tovarnik:'45.1560,19.2280',
     erdut:'45.5220,19.0130',
     ilok:'45.2170,19.3760',
-    belgrad:'44.7866,20.4489',
+    belgrad:'44.8317,20.3697',      // exakt aus deinem Maps-Link (Gazprom Petrol Zmaj 1)
     nis:'43.3209,21.8958',
     kalotina:'43.0007,22.7800',
     vrskaCuka:'43.9760,22.4530',
     strezimirovci:'42.8000,22.4330',
-    sofia:'42.6977,23.3219',
+    sofia:'42.6676,23.2907',        // exakt aus deinem Maps-Link (OMV Sofia)
     plovdiv:'42.1354,24.7453',
-    harmanli:'41.9333,25.9000',
+    harmanli:'41.9260,25.9205',     // exakt aus deinem Maps-Link (Lukoil B107)
     kapikule:'41.7187,26.3530',
     hamzabeyli:'41.9200,26.6300',
     derekoy:'41.9900,27.5400',
-    edirne:'41.6771,26.5557',
+    edirne:'41.7020,26.4131',       // exakt aus deinem Maps-Link (Edirne–Kapıkule Yolu)
     corlu:'41.1600,27.8000',
-    end:'41.0730,28.2470'          // Otman Ufuk Tatil Sitesi, Silivri (Näherung – vor Abfahrt Pin prüfen)
+    end:'41.075527,28.161181'      // Otman Ufuk Tatil Sitesi, Silivri – exakt aus deinem gespeicherten Maps-Link ✓
   };
 
   // Ganze Route je nach gewählter Grenz-Variante zusammenbauen.
@@ -502,32 +520,38 @@
      cam:'https://alltrafficcams.com/de/live/grenzubergang/turkei/bulgarien/kapikule-kapitan-andreewo/',
      camLabel:'Kamera Kapıkule (Ausreise EU)',
      camRet:'https://nakordoni.eu/de/country/turkey',camRetLabel:'Live-Wartezeit alle TR-Grenzen (15-Min-Takt)',
-     desc:'Der größte Grenzübergang der Route und einer der meistfrequentierten weltweit. Vorher volltanken (Harmanli).',
+     desc:'Der größte Grenzübergang der Route und einer der meistfrequentierten weltweit. Vorher volltanken (Harmanli). ⚠️ Die Lage kippt hier oft innerhalb weniger Stunden zwischen Kapıkule und Hamzabeyli – erst kurz vor der Abzweigung entscheiden, nicht schon Stunden vorher.',
      descOut:' <b>Hinfahrt:</b> HGS ist schon gekauft &amp; aufgeladen ✓ – <b>grüne HGS-Spur</b> nehmen, nie die Kassenspur. Guthaben vorher in der App prüfen.',
      descRet:' ⚠️ <b>Rückfahrt:</b> <b>HGS-Schulden müssen bezahlt sein</b>, sonst keine Ausreise aus der Türkei. Danach Einreise nach BG = <b>Schengen-Einreise</b> mit voller Kontrolle. Zweiter großer Zeitfresser – erst Wartezeit checken.',
      fuel:'Lukoil Harmanli',fuelTip:'in BG volltanken vor TR',
      links:[{l:'Live (Siladayız)',u:'https://siladayiz.de/'},
             {l:'HGS-Guthaben prüfen',u:'https://hgsmusteri.ptt.gov.tr/'},
-            {l:'Live-Wartezeit (nakordoni)',u:'https://nakordoni.eu/de/country/turkey'}],
+            {l:'Live-Wartezeit (nakordoni)',u:'https://nakordoni.eu/de/country/turkey'},
+            {l:'⭐ Sıla Yolu 360 (2. Meinung)',u:'https://taplink.cc/silayolu360'}],
      alts:[
-       {an:'⭐ Hamzabeyli / Lesovo',km:'+~40 km',note:'die Standard-Ausweichroute für Reisende aus DE/AT – gute Straße (D535), meist deutlich leerer',coords:'41.9200,26.6300',choice:'hamzabeyli',
-        cam:'https://uzivokamere.com/de/grenzuebergang-hamzabeyli-lesovo-tuerkei-bulgarien/',rec:true},
+       {an:'Hamzabeyli / Lesovo',km:'+~40 km',note:'oft leerer, aber nicht verlässlich – kann selbst binnen 5 Std. von 10 Min. auf 3,5 Std. springen. Immer live prüfen, nicht blind fahren.',coords:'41.9200,26.6300',choice:'hamzabeyli',
+        cam:'https://taplink.cc/silayolu360'},
        {an:'Dereköy / Malko Tarnovo',km:'+~100 km',note:'sehr leer, aber bergig und langsam – nur bei Komplettstau an beiden anderen',coords:'41.9900,27.5400',choice:'derekoy',
         cam:'https://uzivokamere.com/de/granicni-prelaz-derekoy-malo-tarnovo-tuerkei-bulgarien/'}
      ]}
   ];
 
   // Etappen Hinfahrt: 6 Abschnitte (vor/zwischen/nach den 5 Grenzen) – Pyhrn-Route
+  // fromPt/toPt = Koordinaten für den kurzen Etappen-Maps-Link (Start dieser Etappe -> Tankstelle am Ende)
   var legsOut=[
     {cities:['Regensburg','Passau','Linz','Pyhrn (Bosruck+Gleinalm)','Graz'],km:585,h:'5,5 h',
-     fuel:'Aral Rasthof Passau (A3) · ASFINAG Kammern Nord · OMV A9 km 164'},
-    {cities:['Maribor','Ptuj'],km:85,h:'1 h',fuel:'Petrol Maribor AC Vzhod'},
+     fuel:'Aral Rasthof Passau (A3) · ASFINAG Kammern Nord · OMV A9 km 164',
+     fromPt:'start',toPt:'kammern'},
+    {cities:['Maribor','Ptuj'],km:85,h:'1 h',fuel:'Petrol Maribor AC Vzhod',
+     fromPt:'kammern',toPt:'maribor'},
     {cities:['Zagreb','Slavonski Brod'],km:305,h:'3 h',fuel:'INA Slavonski Brod (letzte vor RS)',
-     sleep:'Zagreb / Slavonski Brod'},
+     sleep:'Zagreb / Slavonski Brod',fromPt:'maribor',toPt:'slavBrod'},
     {cities:['Belgrad','Niš'],km:465,h:'4,5 h',fuel:'Gazprom Zmaj Belgrad · OMV Niš',
-     sleep:'Belgrad od. Niš (gute Halbzeit)'},
-    {cities:['Sofia','Plovdiv','Harmanli'],km:345,h:'3,5 h',fuel:'OMV Sofia · Lukoil Harmanli (letzte vor TR)'},
-    {cities:['Edirne','Çorlu'],km:215,h:'2,5 h',fuel:'Shell Edirne (HGS!) · Shell Çorlu'}
+     sleep:'Belgrad od. Niš (gute Halbzeit)',fromPt:'slavBrod',toPt:'belgrad'},
+    {cities:['Sofia','Plovdiv','Harmanli'],km:345,h:'3,5 h',fuel:'OMV Sofia · Lukoil Harmanli (letzte vor TR)',
+     fromPt:'belgrad',toPt:'harmanli'},
+    {cities:['Edirne','Çorlu'],km:215,h:'2,5 h',fuel:'Shell Edirne (HGS!) · Shell Çorlu',
+     fromPt:'harmanli',toPt:'end'}
   ];
 
   var fuelStops=[
@@ -564,9 +588,10 @@
     {flag:'🇭🇷',c:'HAK – Grenzkameras',t:'Live-Bilder Macelj, Bajakovo, Tovarnik, Erdut. Auch als App „Croatia Traffic Info".',u:'https://m.hak.hr/kamera.asp?g=2'},
     {flag:'🇷🇸',c:'AMSS Serbien',t:'Offiziell: Verkehrslage + Wartezeiten serbische Grenzen (Bajakovo, Kalotina).',u:'https://www.amss.org.rs/stanje-na-putu/strana/mapa'},
     {flag:'🇷🇸/🇭🇷',c:'nakordoni.eu – HR ⇄ RS',t:'Live-Wartezeit für Bajakovo, Tovarnik, Erdut, Ilok in Echtzeit, beide Richtungen getrennt.',u:'https://nakordoni.eu/de/country/serbia'},
-    {flag:'🇧🇬',c:'BorderAlarm – alle BG-Grenzen',t:'<b>Beste Quelle für Kalotina/Vrška Čuka/Strezimirovci.</b> Live-Minutenwerte je Richtung.',u:'https://borderalarm.com/de/countries/bulgaria/'},
-    {flag:'🇹🇷',c:'nakordoni.eu – BG ⇄ TR',t:'<b>Beste Quelle für Kapıkule/Hamzabeyli/Dereköy.</b> Aktualisiert alle 15 Minuten, je Richtung.',u:'https://nakordoni.eu/de/country/turkey'},
-    {flag:'🇹🇷',c:'Siladayız – Kameras',t:'Community: alle Grenzkameras der Sıla-Yolu-Route, kostenlos.',u:'https://siladayiz.de/kameralar.html'}
+    {flag:'🇧🇬',c:'BorderAlarm – alle BG-Grenzen',t:'Live-Minutenwerte je Richtung für Kalotina/Vrška Čuka/Strezimirovci.',u:'https://borderalarm.com/de/countries/bulgaria/'},
+    {flag:'🇹🇷',c:'nakordoni.eu – BG ⇄ TR',t:'Aktualisiert alle 15 Minuten, je Richtung – Kapıkule/Hamzabeyli/Dereköy.',u:'https://nakordoni.eu/de/country/turkey'},
+    {flag:'🚗',c:'⭐ Sıla Yolu 360 – Beklemeler (Community)',t:'<b>Zweite Meinung, unbedingt gegenchecken.</b> Aktuelle Community-Übersicht aller Grenzen auf einem Bild (Instagram/WhatsApp), mehrmals täglich neu gepostet. Werte weichen von den offiziellen Quellen oben oft ab – beide ansehen, nicht nur eine.',u:'https://taplink.cc/silayolu360'},
+    {flag:'🚗',c:'Siladayız – Kameras',t:'Community: alle Grenzkameras der Sıla-Yolu-Route, kostenlos.',u:'https://siladayiz.de/kameralar.html'}
   ];
 
   var cams=[
@@ -760,6 +785,13 @@
     for(var i=0;i<legs.length;i++){
       var to=(i<bs.length)?bs[i].name.split(' / ')[0]:(currentDir==='out'?'Silivri':'Fürth');
       h+='<div class="summary-line">'+legs[i].cities.join(' · ')+' → <b>'+to+'</b> · ~'+legs[i].km+' km · ~'+legs[i].h+(legs[i].sleep?(' · 🛏️ '+legs[i].sleep):'')+'</div>';
+      if(legs[i].fromPt && legs[i].toPt){
+        var a = (currentDir==='out') ? PT[legs[i].fromPt] : PT[legs[i].toPt];
+        var b = (currentDir==='out') ? PT[legs[i].toPt]   : PT[legs[i].fromPt];
+        if(a && b){
+          h+='<a class="btn gmap span2 legroute" href="'+ROUTE([a,b])+'" target="_blank" rel="noopener">📍 Etappe in Google Maps: bis '+legs[i].fuel.split(' · ')[0].split(' (')[0]+'</a>';
+        }
+      }
     }
     document.getElementById('stageBody').innerHTML=h;
   }
@@ -769,11 +801,24 @@
     var richtung = (dir==='out')
       ? 'Fahrtrichtung Türkei (Ausreise aus der EU/Schengen an Kapıkule).'
       : 'Fahrtrichtung Deutschland (EINREISE in die EU/Schengen an Kapitan Andreevo UND an Bajakovo – dort sind die längsten Wartezeiten).';
-    return 'Ich fahre heute die Sıla-Yolu-Route '+route+' über die A9 Pyhrn Autobahn (nicht über den Tauern/Karawanken). '+richtung+' '
-      +'Prüfe bitte LIVE über aktuelle Webquellen (ASFINAG, promet.si, HAK Kroatien m.hak.hr/stanje.asp?id=2, AMSS Serbien, nakordoni.eu, borderalarm.com, siladayiz.de) Verkehrslage und Wartezeit in Fahrtrichtung an diesen Punkten:\n'
-      +'1) A9 Pyhrn: Stau vor Bosruck-/Gleinalmtunnel-Mautstelle?\n2) Spielfeld/Šentilj (AT–SI)\n3) Gruškovje/Macelj (SI–HR)\n4) Bajakovo/Batrovci (HR–RS) — Alt.: Tovarnik/Šid, Erdut/Bogojevo, Ilok/Bačka Palanka\n5) Gradina/Kalotina (RS–BG) — Alt.: Vrška Čuka, Strezimirovci\n6) Kapıkule (BG–TR) — Alt.: Hamzabeyli/Lesovo, Dereköy/Malko Tarnovo\n\n'
-      +'Wichtig: Ich habe Mautbox/TAG für Kroatien (ENC) und Serbien (ENP) sowie HGS für die Türkei – nenne mir also nur Wartezeiten, keine Ticket-Tipps.\n'
-      +'Gib mir pro Punkt: aktuelle PKW-Wartezeit in MEINER Fahrtrichtung in Minuten/Stunden, ob etwas gesperrt/überlastet ist, und AM ENDE eine klare Empfehlung: Hauptübergang fahren oder auf welche Alternative wechseln (mit Umweg-km und geschätzter Zeitersparnis). Datum/Uhrzeit der Info + Quellen nennen.';
+    var etaEl=document.getElementById('kiEta');
+    var eta=etaEl?parseFloat(etaEl.value):null;
+    if(isNaN(eta)||eta===null) eta=2;
+    var now=new Date();
+    var nowStr=now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    var arr=new Date(now.getTime()+eta*3600000);
+    var arrStr=arr.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+
+    return 'Es ist jetzt '+nowStr+' Uhr. Ich fahre heute die Sıla-Yolu-Route '+route+' über die A9 Pyhrn Autobahn (nicht über den Tauern/Karawanken). '+richtung+' '
+      +'Ich erreiche die NÄCHSTE kritische Grenze voraussichtlich in ca. '+eta+' Std., also gegen '+arrStr+' Uhr.\n\n'
+      +'WICHTIG – Grenzwartezeiten bei dieser Route ändern sich erfahrungsgemäß stark und schnell (z.B. von 10 Std. auf 2 Std. oder von 10 Min. auf 3,5 Std. innerhalb von 5 Stunden). Eine einzelne aktuelle Zahl reicht mir NICHT. Ich brauche stattdessen:\n'
+      +'1) Den aktuellen Wert JETZT aus mindestens 2 unabhängigen Quellen, mit Uhrzeit der Messung – bei Abweichung beide nennen, nicht mitteln.\n'
+      +'2) Falls erkennbar: den TREND der letzten Stunden (steigend/fallend/stabil) an diesem Übergang, nicht nur den Momentwert.\n'
+      +'3) Eine Einschätzung, was realistisch bei meiner Ankunft um '+arrStr+' Uhr zu erwarten ist – nicht nur der Wert von jetzt.\n\n'
+      +'Quellen, die du dafür nutzen sollst: ASFINAG (AT), promet.si (SI), HAK m.hak.hr/stanje.asp?id=2 (HR), AMSS (RS), nakordoni.eu (HR⇄RS und BG⇄TR, alle 15 Min.), borderalarm.com (alle BG-Grenzen), UND zusätzlich die türkische Community-Quelle Sıla Yolu 360 (taplink.cc/silayolu360, dort das aktuellste "Beklemeler"-Bild suchen/nennen) als Vergleich zu den offiziellen Werten.\n\n'
+      +'Punkte auf meiner Route:\n1) A9 Pyhrn: Stau vor Bosruck-/Gleinalmtunnel-Mautstelle?\n2) Spielfeld/Šentilj (AT–SI)\n3) Gruškovje/Macelj (SI–HR)\n4) Bajakovo/Batrovci (HR–RS) — Alt.: Tovarnik/Šid, Erdut/Bogojevo, Ilok/Bačka Palanka\n5) Gradina/Kalotina (RS–BG) — Alt.: Vrška Čuka, Strezimirovci\n6) Kapıkule (BG–TR) — Alt.: Hamzabeyli/Lesovo, Dereköy/Malko Tarnovo\n\n'
+      +'Ich habe Mautbox/TAG für Kroatien (ENC) und Serbien (ENP) sowie HGS für die Türkei – keine Ticket-Tipps nötig, nur Wartezeiten.\n'
+      +'Gib mir am Ende eine klare, konkrete Empfehlung für JETZT: Hauptübergang fahren, oder auf welche Alternative wechseln (mit Umweg-km und geschätzter Zeitersparnis) – und ob sich die Entscheidung angesichts meiner Ankunftszeit um '+arrStr+' Uhr eventuell noch ändern könnte.';
   }
   function updatePrompt(){var ta=document.getElementById('kiPrompt');if(ta)ta.value=buildPrompt(currentDir);}
   function openURL(u){window.open(u,'_blank','noopener');}
@@ -800,6 +845,7 @@
   function showLoc(t,km){document.getElementById('locText').textContent=t;document.getElementById('locKm').textContent=km;document.getElementById('locbar').classList.add('show');}
 
   document.getElementById('kiBtn').addEventListener('click',function(){var p=document.getElementById('kiPanel');p.classList.toggle('open');if(p.classList.contains('open')){updatePrompt();p.scrollIntoView({behavior:'smooth',block:'nearest'});}});
+  document.getElementById('kiEta').addEventListener('input',updatePrompt);
   document.getElementById('kiPerplexity').addEventListener('click',function(){openURL('https://www.perplexity.ai/search?q='+encodeURIComponent(promptText()));});
   document.getElementById('kiGpt').addEventListener('click',function(){openURL('https://chatgpt.com/?q='+encodeURIComponent(promptText()));});
   document.getElementById('kiGemini').addEventListener('click',function(){copyPrompt(function(ok){openURL('https://gemini.google.com/app');flashNote(ok?'Prompt kopiert – in Gemini einfügen.':'Bitte Prompt manuell kopieren.');});});
