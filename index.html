@@ -796,21 +796,22 @@
              ['OMV Maribor','OMV Tržaška cesta Maribor','SI · 24 h · saubere WC']]},
       {n:3, from:P.gruskovje, to:P.bajakovo, titel:'Gruškovje → Grenze Bajakovo (HR/RS)',
        info:'~300 km · ~3 h · über Zagreb',
-       tank:[['INA Zagreb (Ivanja Reka)','INA Ivanja Reka Zagreb autocesta','HR · 24 h · groß, saubere WC'],
+       tank:[['Petrol/INA Ivanja Reka','benzinska postaja Ivanja Reka Zagreb autocesta A3','HR · direkt am Autobahnknoten Zagreb-Ost · 24 h · WC'],
              ['INA Slavonski Brod','INA Ul. Petra Svačića 4 35000 Slavonski Brod','HR · 24 h · letzte vor RS']],
-       schlaf:['🛏️ Zagreb / Slavonski Brod','Hotel Slavonski Brod','HR · gute erste Nacht · sicherer Parkplatz'],
+       schlaf:['🛏️ Raum Zagreb / Slavonski Brod','Hotel Central Slavonski Brod','HR · erste Nacht falls spät los · Parkplatz am Hotel'],
        alt:['Tovarnik / Šid','45.1560,19.2280','+15 km · liegt an der Route, oft leerer']},
       {n:4, from:P.bajakovo, to:P.kalotina, titel:'Bajakovo → Grenze Kalotina (RS/BG)',
        info:'~400 km · ~4 h · über Belgrad + Niš',
        tank:[['Gazprom Zmaj 1 Belgrad','Gazprom Petrol Zmaj 1 Autoput 11000 Beograd','RS · Bargeld! · WC'],
-             ['OMV Niš','OMV Bulevar 12. februara 18000 Niš','RS · sauberste WC der Route']],
-       schlaf:['🛏️ Belgrad oder Niš','Hotel Zemun Beograd','RS · gute Halbzeit · bewachter Parkplatz'],
+             ['OMV Niš','OMV Bulevar 12. februara 18000 Niš','RS · sauberste WC der Route'],
+             ['İstanbul Restaurant (Bosphorus)','Bosphorus Hotel Aleksinac Srbija','RS · türk. Raststätte an A1 · halal Essen · saubere WC · 20 km vor Niš']],
+       schlaf:['🛏️ Bosphorus Hotel Aleksinac','Bosphorus Hotel Žitkovački put Aleksinac Srbija','RS · Sıla-Yolu-Klassiker · 20 km vor Niš an der A1 · türkisch, halal, bewachter Parkplatz · in Hochsaison VORHER buchen: WhatsApp +381 64 8672630'],
        alt:['Vrška Čuka','43.9760,22.4530','+80 km · meist fast leer']},
       {n:5, from:P.kalotina, to:P.kapikule, titel:'Kalotina → Grenze Kapıkule (BG/TR)',
        info:'~320 km · ~3,5 h · über Sofia + Plovdiv (A1 Trakia)',
        tank:[['OMV Sofia','OMV bul. Bulgaria 49V 1404 Sofia','BG · 24 h · saubere WC'],
-             ['Lukoil B107 Harmanli','Lukoil E80 6450 Harmanli','BG · letzte vor TR · VOLLTANKEN']],
-       schlaf:['🛏️ Raum Sofia / Plovdiv','Hotel Plovdiv','BG · falls Nachtfahrt vermeiden']},
+             ['Shell / OMV Svilengrad','Shell benzinstantsiya Svilengrad E80','BG · bekannte Kette · näher an Grenze · Kartenzahlung sicher'],['Lukoil B98 Harmanli','Lukoil E80 6450 Harmanli','BG · groß, 24h · VOLLTANKEN (Lukoil=russ., Karte ggf. bar sichern)']],
+       schlaf:['🛏️ Raum Plovdiv','Hotel Trakia Plovdiv','BG · falls Nachtfahrt vermeiden · an der A1 Trakia']},
       {n:6, from:P.kapikule, to:P.silivri, titel:'Kapıkule → Silivri (Ziel)',
        info:'~215 km · ~2,5 h · über Edirne + Çorlu',
        tank:[['Shell Edirne (HGS!)','Shell Edirne Kapıkule Yolu 22130 Edirne','TR · HGS hier kaufen! · WC'],
@@ -828,7 +829,7 @@
       });
     }
 
-    var h='<p class="qr-hint">Jede <b>Grenze = eine Etappe</b>. Oben der Knopf für die ganze Etappe bis zur Grenze, darunter 2 sichere Tankstellen mit WC, Schlaf-Tipp und – falls die Grenze dicht ist – die Ausweich-Grenze.</p>';
+    var h='<p class="qr-hint">Jede <b>Grenze = eine Etappe</b>. Oben der Knopf für die ganze Etappe bis zur Grenze, darunter sichere Tankstellen mit WC, Schlaf-Tipp und – falls die Grenze dicht ist – die Ausweich-Grenze. Schlaf-/Rast-Tipps zum Teil aus der Sıla-Yolu-Community (Bosphorus Hotel u.a.) – in der Hochsaison vorher buchen.</p>';
 
     etappen.forEach(function(e){
       h+='<div class="etp">';
