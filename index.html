@@ -265,30 +265,35 @@
   a.btn.legroute{margin:2px 0 12px;font-size:12px;min-height:38px;padding:8px}
 
   .quickroutes .qr-hint{margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5}
-  .qr-start{font-weight:700;font-size:13px;color:var(--blue);margin:0 0 10px}
-  .qr-startrow{display:flex;align-items:center;gap:11px;padding:4px 2px 10px}
-  .qr-num.start{background:var(--go)}
-  a.qr-leg{display:flex;align-items:center;gap:11px;text-decoration:none;
-    background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 12px;
-    margin:0 0 9px;color:var(--ink)}
-  a.qr-leg:last-child{margin-bottom:0}
-  .qr-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;
-    font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;
+  .quickroutes .qr-hint{margin:0 0 14px;font-size:12.5px;color:var(--muted);line-height:1.55}
+  .etp{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px;margin:0 0 13px}
+  .etp:last-child{margin-bottom:0}
+  .etp-head{display:flex;align-items:center;gap:11px;margin:0 0 11px}
+  .etp-n{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;
+    font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;
     font-variant-numeric:tabular-nums}
-  .qr-txt{flex:1 1 auto;display:flex;flex-direction:column;line-height:1.3}
-  .qr-txt b{font-size:14px}
-  .qr-txt small{color:var(--muted);font-size:11.5px;font-weight:600;margin-top:1px}
-  .qr-go{flex:0 0 auto;font-size:12.5px;font-weight:700;color:#12379E;background:var(--blue-soft);
-    border:1px solid #C6D8FB;border-radius:9px;padding:8px 11px;white-space:nowrap}
-  a.qr-leg.sleep{background:#F3EEFF;border-color:#D9C9F5}
-  a.qr-leg.sleep .qr-num.sleepnum{background:#7C4DD1}
-  a.qr-leg.sleep .qr-go{color:#5B2EA6;background:#EBE0FB;border-color:#D9C9F5}
-  .qr-altsec{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
-  .qr-alttitle{margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:.06em;
-    text-transform:uppercase;color:var(--caution)}
-  a.qr-leg.alt{background:var(--caution-soft);border-color:#F3C58A}
-  a.qr-leg.alt .qr-num.altnum{background:#EA580C}
-  a.qr-leg.alt .qr-go{color:#8A3E07;background:#FDEBD8;border-color:#F3C58A}
+  .etp-ti{display:flex;flex-direction:column;line-height:1.25}
+  .etp-ti b{font-size:15px;letter-spacing:-.01em}
+  .etp-ti small{color:var(--muted);font-size:11.5px;font-weight:600;margin-top:2px}
+  a.etp-go{display:block;text-align:center;text-decoration:none;background:var(--blue);color:#fff;
+    border:1px solid #1A45C4;border-radius:11px;padding:12px;font-weight:700;font-size:13.5px;
+    margin:0 0 12px}
+  a.etp-go:active{filter:brightness(.95)}
+  .etp-sub{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 7px}
+  a.etp-row{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);
+    background:#F7F9FC;border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin:0 0 7px}
+  a.etp-row:last-child{margin-bottom:0}
+  .etp-ic{flex:0 0 auto;font-size:17px}
+  .etp-rt{flex:1 1 auto;display:flex;flex-direction:column;line-height:1.25}
+  .etp-rt b{font-size:13.5px}
+  .etp-rt small{color:var(--muted);font-size:11px;font-weight:600;margin-top:1px}
+  .etp-m{flex:0 0 auto;font-size:12px;font-weight:700;color:#12379E;background:var(--blue-soft);
+    border:1px solid #C6D8FB;border-radius:8px;padding:7px 10px;white-space:nowrap}
+  a.etp-row.sleep{background:#F3EEFF;border-color:#D9C9F5}
+  a.etp-row.sleep .etp-m{color:#5B2EA6;background:#EBE0FB;border-color:#D9C9F5}
+  a.etp-row.alt{background:var(--caution-soft);border-color:#F3C58A}
+  a.etp-row.alt .etp-m{color:#8A3E07;background:#FDEBD8;border-color:#F3C58A}
 
   /* Tank-Tabelle */
   .tanktab{width:100%;table-layout:fixed;border-collapse:collapse;font-size:12.5px}
@@ -773,68 +778,76 @@
   }
 
   function renderQuickRoutes(legs){
-    // Alle Stopps in Fahrreihenfolge: Start + jede Tankstelle/WC + Schlaf + Ziel.
-    // [Anzeigename, Maps-Query, Info, typ]  typ: '', 'sleep', 'alt'
-    var chain=[
-      ['Fürth (Start)', 'Fronmüllerstraße 139, 90763 Fürth', 'Start ca. 02:30', ''],
-      ['Aral Rasthof Passau', 'Aral Reichsgrafenstraße 35 94036 Passau', 'DE · A3 · 24 h · Tanken + WC', ''],
-      ['ASFINAG Kammern Nord', 'ASFINAG Raststation Kammern Nord A9 8773', 'AT · A9 Pyhrn · 24 h · WC', ''],
-      ['OMV A9 km 164', 'OMV Autobahn A9 8121 nach Gleinalmtunnel', 'AT · nach Gleinalm · 24 h', ''],
-      ['Avanti Spielfeld', 'Avanti Oberst-Perleß-Straße 9 8471 Spielfeld', 'AT · letzte vor SI · kein WC', ''],
-      ['Petrol Maribor AC Vzhod', 'Petrol Na Polju 2000 Maribor', 'SI · 24 h · WC kostet', ''],
-      ['INA Slavonski Brod', 'INA Ul. Petra Svačića 4 35000 Slavonski Brod', 'HR · 24 h · letzte vor RS', ''],
-      ['🛏️ Schlaf: Raum Belgrad', 'Hedonic Hotel Beograd', 'RS · Community-Tipp · gute Halbzeit · sicherer Parkplatz', 'sleep'],
-      ['Gazprom Zmaj 1 Belgrad', 'Gazprom Petrol Zmaj 1 Autoput 11000 Beograd', 'RS · Bargeld dabei!', ''],
-      ['🛏️ Schlaf: Raum Niš', 'See You Apartments Niš', 'RS · Community-Tipp · Alternative zur Belgrad-Nacht', 'sleep'],
-      ['OMV Niš', 'OMV Bulevar 12. februara 18000 Niš', 'RS · sauberste WC', ''],
-      ['OMV Sofia', 'OMV bul. Bulgaria 49V 1404 Sofia', 'BG', ''],
-      ['Lukoil B107 Harmanli', 'Lukoil E80 6450 Harmanli', 'BG · letzte vor TR · VOLLTANKEN', ''],
-      ['Shell Edirne (HGS!)', 'Shell Edirne Kapıkule Yolu 22130 Edirne', 'TR · HGS hier kaufen!', ''],
-      ['Shell / Opet Çorlu', 'Shell Salih Omurtak Cd. 177 59860 Çorlu', 'TR', ''],
-      ['Silivri (Ziel)', '41.075527,28.161181', 'Otman Ufuk Tatil Sitesi', '']
+    var P={
+      furth:'Fronmüllerstraße 139, 90763 Fürth',
+      spielfeld:'46.6930,15.6420', gruskovje:'46.2230,15.6760',
+      bajakovo:'45.0846,19.1300', kalotina:'43.0007,22.7800',
+      kapikule:'41.7187,26.3530', silivri:'41.075527,28.161181'
+    };
+    var etappen=[
+      {n:1, from:P.furth, to:P.spielfeld, titel:'Fürth → Grenze Spielfeld (AT/SI)',
+       info:'~740 km · ~7 h · über A9 Pyhrn (Bosruck+Gleinalm)',
+       tank:[['Aral Rasthof Passau','Aral Reichsgrafenstraße 35 94036 Passau','DE · A3 · 24 h · saubere WC'],
+             ['ASFINAG Kammern Nord','ASFINAG Raststation Kammern Nord A9 8773','AT · A9 · 24 h · WC'],
+             ['OMV A9 km 164','OMV Autobahn A9 8121 Gleinalm','AT · nach Gleinalm · 24 h']]},
+      {n:2, from:P.spielfeld, to:P.gruskovje, titel:'Spielfeld → Grenze Gruškovje (SI/HR)',
+       info:'~140 km · ~1,5 h · durch Slowenien',
+       tank:[['Petrol Maribor AC Vzhod','Petrol Na Polju 2000 Maribor','SI · 24 h · WC (kostet)'],
+             ['OMV Maribor','OMV Tržaška cesta Maribor','SI · 24 h · saubere WC']]},
+      {n:3, from:P.gruskovje, to:P.bajakovo, titel:'Gruškovje → Grenze Bajakovo (HR/RS)',
+       info:'~300 km · ~3 h · über Zagreb',
+       tank:[['INA Zagreb (Ivanja Reka)','INA Ivanja Reka Zagreb autocesta','HR · 24 h · groß, saubere WC'],
+             ['INA Slavonski Brod','INA Ul. Petra Svačića 4 35000 Slavonski Brod','HR · 24 h · letzte vor RS']],
+       schlaf:['🛏️ Zagreb / Slavonski Brod','Hotel Slavonski Brod','HR · gute erste Nacht · sicherer Parkplatz'],
+       alt:['Tovarnik / Šid','45.1560,19.2280','+15 km · liegt an der Route, oft leerer']},
+      {n:4, from:P.bajakovo, to:P.kalotina, titel:'Bajakovo → Grenze Kalotina (RS/BG)',
+       info:'~400 km · ~4 h · über Belgrad + Niš',
+       tank:[['Gazprom Zmaj 1 Belgrad','Gazprom Petrol Zmaj 1 Autoput 11000 Beograd','RS · Bargeld! · WC'],
+             ['OMV Niš','OMV Bulevar 12. februara 18000 Niš','RS · sauberste WC der Route']],
+       schlaf:['🛏️ Belgrad oder Niš','Hotel Zemun Beograd','RS · gute Halbzeit · bewachter Parkplatz'],
+       alt:['Vrška Čuka','43.9760,22.4530','+80 km · meist fast leer']},
+      {n:5, from:P.kalotina, to:P.kapikule, titel:'Kalotina → Grenze Kapıkule (BG/TR)',
+       info:'~320 km · ~3,5 h · über Sofia + Plovdiv (A1 Trakia)',
+       tank:[['OMV Sofia','OMV bul. Bulgaria 49V 1404 Sofia','BG · 24 h · saubere WC'],
+             ['Lukoil B107 Harmanli','Lukoil E80 6450 Harmanli','BG · letzte vor TR · VOLLTANKEN']],
+       schlaf:['🛏️ Raum Sofia / Plovdiv','Hotel Plovdiv','BG · falls Nachtfahrt vermeiden']},
+      {n:6, from:P.kapikule, to:P.silivri, titel:'Kapıkule → Silivri (Ziel)',
+       info:'~215 km · ~2,5 h · über Edirne + Çorlu',
+       tank:[['Shell Edirne (HGS!)','Shell Edirne Kapıkule Yolu 22130 Edirne','TR · HGS hier kaufen! · WC'],
+             ['Shell / Opet Çorlu','Shell Salih Omurtak Cd. 177 59860 Çorlu','TR · 24 h · saubere WC']],
+       alt:['Hamzabeyli / Lesovo','41.9200,26.6300','+40 km · statt Kapıkule · vorher live prüfen!']}
     ];
 
-    // Alternativ-Grenzen zum Umfahren (immer sichtbar, Ziel bleibt Silivri/Fürth)
-    var altList=[
-      ['Tovarnik / Šid', '45.1560,19.2280', 'statt Bajakovo · +15 km · liegt an der Route'],
-      ['Erdut / Bogojevo', '45.5220,19.0130', 'statt Bajakovo · +70 km'],
-      ['Ilok / Bačka Palanka', '45.2170,19.3760', 'statt Bajakovo · +75 km'],
-      ['Vrška Čuka', '43.9760,22.4530', 'statt Kalotina · +80 km · meist leer'],
-      ['Strezimirovci', '42.8000,22.4330', 'statt Kalotina · +55 km · Bergstraße'],
-      ['Hamzabeyli / Lesovo', '41.9200,26.6300', 'statt Kapıkule · +40 km · live prüfen!'],
-      ['Dereköy / Malko Tarnovo', '41.9900,27.5400', 'statt Kapıkule · +100 km · bergig']
-    ];
-
-    if(currentDir==='ret') chain=chain.slice().reverse();
-    var dest=(currentDir==='out')?'41.075527,28.161181':'Fronmüllerstraße 139, 90763 Fürth';
-    var destName=(currentDir==='out')?'Silivri':'Fürth';
-
-    var h='<p class="qr-hint">Jeder Stopp einzeln – der Reihe nach von oben nach unten. Jeder Knopf öffnet in Google Maps die Fahrt vom vorigen zum nächsten Stopp (mit Toilette/Tanken).</p>';
-    for(var i=0;i<chain.length;i++){
-      var s=chain[i];
-      if(i===0){
-        h+='<div class="qr-startrow"><span class="qr-num start">▶</span><span class="qr-txt"><b>'+s[0]+'</b><small>'+s[2]+'</small></span></div>';
-        continue;
-      }
-      var link=ROUTE([chain[i-1][1], s[1]]);
-      var cls='qr-leg'+(s[3]==='sleep'?' sleep':'');
-      var go=(s[3]==='sleep')?'🛏️ Maps':'🗺️ Maps';
-      h+='<a class="'+cls+'" href="'+link+'" target="_blank" rel="noopener">'
-        +'<span class="qr-num'+(s[3]==='sleep'?' sleepnum':'')+'">'+(s[3]==='sleep'?'🛏️':i)+'</span>'
-        +'<span class="qr-txt"><b>'+s[0]+'</b><small>'+s[2]+'</small></span>'
-        +'<span class="qr-go">'+go+'</span></a>';
+    if(currentDir==='ret'){
+      etappen=etappen.slice().reverse().map(function(e,idx){
+        var c={};for(var k in e)c[k]=e[k];
+        var t=c.from; c.from=c.to; c.to=t;
+        c.n=idx+1;
+        c.titel=c.titel.split(' → ').reverse().join(' → ').replace(/\(([A-Z]{2})\/([A-Z]{2})\)/,'($2/$1)');
+        return c;
+      });
     }
 
-    // Alternativ-Grenzen: eigener Abschnitt, jede führt komplett bis zum Ziel
-    h+='<div class="qr-altsec"><p class="qr-alttitle">🔀 Umfahren – Alternativgrenze bis '+destName+'</p>';
-    altList.forEach(function(a){
-      var link=ROUTE([a[1], dest]);
-      h+='<a class="qr-leg alt" href="'+link+'" target="_blank" rel="noopener">'
-        +'<span class="qr-num altnum">🔀</span>'
-        +'<span class="qr-txt"><b>'+a[0]+'</b><small>'+a[2]+'</small></span>'
-        +'<span class="qr-go">🗺️ Maps</span></a>';
+    var h='<p class="qr-hint">Jede <b>Grenze = eine Etappe</b>. Oben der Knopf für die ganze Etappe bis zur Grenze, darunter 2 sichere Tankstellen mit WC, Schlaf-Tipp und – falls die Grenze dicht ist – die Ausweich-Grenze.</p>';
+
+    etappen.forEach(function(e){
+      h+='<div class="etp">';
+      h+='<div class="etp-head"><span class="etp-n">'+e.n+'</span><div class="etp-ti"><b>'+e.titel+'</b><small>'+e.info+'</small></div></div>';
+      h+='<a class="etp-go" href="'+ROUTE([e.from,e.to])+'" target="_blank" rel="noopener">🗺️ Diese Etappe in Google Maps fahren</a>';
+      h+='<div class="etp-sub">⛽ Tanken &amp; WC</div>';
+      e.tank.forEach(function(t){
+        h+='<a class="etp-row" href="'+MAP(t[1])+'" target="_blank" rel="noopener"><span class="etp-ic">⛽</span><span class="etp-rt"><b>'+t[0]+'</b><small>'+t[2]+'</small></span><span class="etp-m">Maps</span></a>';
+      });
+      if(e.schlaf){
+        h+='<a class="etp-row sleep" href="'+MAP(e.schlaf[1])+'" target="_blank" rel="noopener"><span class="etp-ic">🛏️</span><span class="etp-rt"><b>'+e.schlaf[0]+'</b><small>'+e.schlaf[2]+'</small></span><span class="etp-m">Maps</span></a>';
+      }
+      if(e.alt){
+        var altDest=(currentDir==='out')?P.silivri:P.furth;
+        var altName=(currentDir==='out')?'Silivri':'Fürth';
+        h+='<a class="etp-row alt" href="'+ROUTE([e.alt[1],altDest])+'" target="_blank" rel="noopener"><span class="etp-ic">🔀</span><span class="etp-rt"><b>Ausweichen: '+e.alt[0]+'</b><small>'+e.alt[2]+' · Route bis '+altName+'</small></span><span class="etp-m">Maps</span></a>';
+      }
+      h+='</div>';
     });
-    h+='</div>';
 
     document.getElementById('quickRoutesBody').innerHTML=h;
   }
