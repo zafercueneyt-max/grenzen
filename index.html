@@ -178,6 +178,10 @@
   .desc{margin:0 0 10px;color:#3A4453;font-size:13.5px}
   .desc b{color:var(--ink);font-weight:700}
 
+  .wx{margin:0 0 11px;font-size:13px;font-weight:600}
+  .wx-val{display:inline-block;background:#EAF3FF;border:1px solid #C6D8FB;color:#12379E;
+    border-radius:999px;padding:5px 12px}
+  .wx-load,.wx-off{color:var(--muted);font-size:12.5px;font-weight:500}
   .statusrow{display:flex;align-items:center;gap:9px;margin:0 0 11px;flex-wrap:wrap}
   .stbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
     background:#fff;border-radius:999px;padding:6px 11px;cursor:pointer;
@@ -759,6 +763,7 @@
     return '<div class="stop'+focus+'" data-idx="'+idx+'"><span class="node"></span><div class="card glass solidish">'
       +'<div class="crumbs"><span class="cc">'+from+'</span><span class="arrow">&#8594;</span><span class="cc">'+to+'</span><span class="badge '+b.badgeClass+'">'+b.badge+'</span></div>'
       +'<p class="name">'+b.name+'</p><p class="desc">'+desc+'</p>'
+      +'<div class="wx" data-lat="'+b.lat+'" data-lng="'+b.lng+'"><span class="wx-load">🌡️ Wetter wird geladen…</span></div>'
       +statusHTML(b)
       +'<div class="btns">'+btns.join('')+'</div>'+routeBtns+alts+'</div></div>';
   }
@@ -774,7 +779,48 @@
     for(var i=0;i<bs.length;i++){html+=legHTML(legs[i]);html+=cardHTML(bs[i],dir,i);}
     html+=legHTML(legs[bs.length])+endpointHTML(ep.end);
     document.getElementById('rail').innerHTML=html;
-    updatePrompt(); renderStages(legs); renderQuickRoutes(legs);
+    updatePrompt(); renderStages(legs); renderQuickRoutes(legs); loadWeather();
+  }
+
+  // ---------- Wetter (Open-Meteo, kostenlos, kein Schlüssel) ----------
+  var wxCache={};
+  function wxDesc(code){
+    // WMO-Wettercodes -> Emoji + Text (Deutsch)
+    if(code===0) return ['☀️','klar'];
+    if(code<=2) return ['🌤️','leicht bewölkt'];
+    if(code===3) return ['☁️','bewölkt'];
+    if(code<=48) return ['🌫️','Nebel'];
+    if(code<=57) return ['🌦️','Nieselregen'];
+    if(code<=67) return ['🌧️','Regen'];
+    if(code<=77) return ['🌨️','Schnee'];
+    if(code<=82) return ['🌧️','Regenschauer'];
+    if(code<=86) return ['🌨️','Schneeschauer'];
+    if(code<=99) return ['⛈️','Gewitter'];
+    return ['🌡️',''];
+  }
+  function loadWeather(){
+    var nodes=document.querySelectorAll('.wx');
+    [].forEach.call(nodes,function(el){
+      var lat=el.getAttribute('data-lat'), lng=el.getAttribute('data-lng');
+      var key=lat+','+lng;
+      if(wxCache[key]){ fillWx(el,wxCache[key]); return; }
+      if(!navigator.onLine){ el.innerHTML='<span class="wx-off">🌡️ Wetter offline nicht verfügbar</span>'; return; }
+      var url='https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lng
+        +'&current=temperature_2m,weather_code,precipitation,wind_speed_10m&timezone=auto';
+      fetch(url).then(function(r){return r.json();}).then(function(d){
+        if(!d||!d.current){throw 0;}
+        wxCache[key]=d.current; fillWx(el,d.current);
+      }).catch(function(){
+        el.innerHTML='<span class="wx-off">🌡️ Wetter gerade nicht abrufbar</span>';
+      });
+    });
+  }
+  function fillWx(el,c){
+    var wd=wxDesc(c.weather_code);
+    var t=Math.round(c.temperature_2m);
+    var rain=(c.precipitation>0)?(' · 🌧️ '+c.precipitation+' mm'):'';
+    var wind=(c.wind_speed_10m>=30)?(' · 💨 '+Math.round(c.wind_speed_10m)+' km/h'):'';
+    el.innerHTML='<span class="wx-val">'+wd[0]+' '+t+'°C · '+wd[1]+rain+wind+'</span>';
   }
 
   function renderQuickRoutes(legs){

@@ -5,7 +5,7 @@
    Version gibt, und zeigt den Aktualisieren-Balken an.
    ------------------------------------------------------------------ */
 
-const CACHE = 'grenzen-v14';
+const CACHE = 'grenzen-v15';
 
 const SHELL = [
   './',
