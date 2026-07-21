@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-20T19:48:02.987Z",
+  "updated": "2026-07-21T03:49:42.064Z",
   "source": "AMSS / Uprava granične policije RS",
   "crossings": {
     "batrovci": {
@@ -7,7 +7,7 @@
       "ulaz": 30
     },
     "gradina": {
-      "izlaz": 240,
+      "izlaz": 30,
       "ulaz": 30
     }
   }
